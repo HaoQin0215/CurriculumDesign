@@ -51,5 +51,6 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
+# 忽略vs2017产生的文件
 .vs/*
 .git/*
