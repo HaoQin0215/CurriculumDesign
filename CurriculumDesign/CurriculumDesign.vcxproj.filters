@@ -21,6 +21,9 @@
     <ClCompile Include="entryBlock.c">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="task.h">
+      <Filter>头文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="list.h">

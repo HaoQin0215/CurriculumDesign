@@ -3,7 +3,7 @@
 #include<stdlib.h>
 #include<time.h>
 
-enum listType{BLOCKING,SUSPEND,RUNNING,READY};
+
 
 typedef struct ProcessList ProcessList;
 typedef struct ListItem ListItem;
