@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include<stdio.h>
 #include<stdlib.h>
 #include<time.h>
@@ -29,24 +29,40 @@ typedef struct ProcessList {
 	void* ListItemIndex;
 	ListItem* lastItem;
 	void * listType;
-	
+
 }ProcessList;
 
 #define setListPCB_Pointer(ListItem,PCBpointer) ((ListItem)->PCB_block=(void*)PCBpointer)
 
-//¶¨Òå×î¶à½ø³ÌÊý
+//å®šä¹‰æœ€å¤šè¿›ç¨‹æ•°
 #define MAX_PORCESS_NUMBER 20
 
-//¶¨Òå×îµÍÓÅÏÈ¼¶
+//å®šä¹‰æœ€ä½Žä¼˜å…ˆçº§
 #define MAX_subordinateListItemValue 30
 
-//»ñµÃµ±Ç°Á´±í½ø³ÌÊý
+//èŽ·å¾—å½“å‰é“¾è¡¨è¿›ç¨‹æ•°
 #define GET_LIST_NUMBER(List) ((List)->numberOfProcesses)
-//»ñµÃµ±Ç°ÁÐ±íÏîÓÅÏÈ¼¶
+//èŽ·å¾—å½“å‰åˆ—è¡¨é¡¹ä¼˜å…ˆçº§
 #define GET_priorityValue(Item) ((Item)->priorityValue)
-//ÉèÖÃµ±Ç°ÁÐ±íÏîÓÅÏÈ¼¶
+//è®¾ç½®å½“å‰åˆ—è¡¨é¡¹ä¼˜å…ˆçº§
 #define SET_priorityValue(Item,value) ((Item)->priorityValue=value)
+//åˆ¤æ–­å½“å‰åˆ—è¡¨æ˜¯å¦ä¸ºç©º
+#define LIST_IS_EMPTY(list) ((list->numberOfProcesses==0)?1:0)
 
+//æ—¶é—´ç‰‡åˆ°æ—¶åˆ‡æ¢åˆ—è¡¨é¡¹
+#define listChangeListItemWithTime(pcb,list) {\
+	ProcessList*const ConstList = (list);\
+	ConstList->ListItemIndex = ConstList->ListItemIndex->next;\
+	if ((void*)ConstList->ListItemIndex == (void*)ConstList->lastItem) {\
+		ConstList->ListItemIndex = ConstList->ListItemIndex->next;\
+	}\
+	pcb = ConstList->ListItemIndex->PCB_block;\
+}\
+//æ£€æŸ¥åˆ—è¡¨æ˜¯å¦è¢«åˆå§‹åŒ–
+#define listIS_INITIAL(list) (list->lastItem->priorityValue==MAX_subordinateListItemValue)
+
+//è®¾ç½®åˆ—è¡¨é¡¹å€¼
+#define listSetListItemValue(listItem,value) ((listItem)->runTime=value)
 
 void InitProcessList(ProcessList* list);
 
@@ -57,9 +73,3 @@ void InsertItemIntoProcessList(ListItem* item, ProcessList* list);
 void InsertItemToListEnd(ListItem*item, ProcessList* list);
 
 int DeleteFromList(ListItem*item);
-
-
-
-
-
-

@@ -117,11 +117,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="list.h" />
+    <ClInclude Include="pcbUtil.h" />
+    <ClInclude Include="process.h" />
+    <ClInclude Include="stackSimulator.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="entryBlock.c" />
     <ClCompile Include="list.c" />
-    <ClCompile Include="task.h" />
+    <ClCompile Include="pcbUtil.c" />
+    <ClCompile Include="process.c" />
+    <ClCompile Include="stackSimulator.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
