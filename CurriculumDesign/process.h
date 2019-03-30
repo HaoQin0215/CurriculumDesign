@@ -1,13 +1,18 @@
 
 #include"pcbUtil.h"
 
+
+	int initStaticLists();
+
+	void freeStaticLists();
+
 	int CreateNewProcess(ProcessFunction_t function,
 		const char* const name, const unsigned int stackLength,
 		void* const parameters, unsigned int prority,
-		PCB* pcb);
+		PCB** pcb);
 
 	void InitialNewProcess(ProcessFunction_t function, const char* const name, const unsigned int stackLength,
-		void* const parameters, unsigned int prority, PCB* pcb);
+		void* const parameters, unsigned int prority, PCB*pcb);
 
 	void addProcessToReadyList(PCB_t*newPcb);
 

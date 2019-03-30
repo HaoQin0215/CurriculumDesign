@@ -27,7 +27,7 @@ typedef struct PCB_ADDRESSofMEMORY {
 typedef struct ProcessControllBlock {
 	volatile PCB_ADDRESSofMEMORY stackAddress;
 	//指向的父列表项
-	ListItem hostItem;
+	ListItem *hostItem;
 	//进程运行时间
 	clock_t runTime;
 	//进程名称
@@ -50,18 +50,21 @@ typedef PCB PCB_t;
 PCB_t* volatile CurrentPCB_pointer;
 
 //全局就绪列表
-ProcessList ProcessReadyList[MAX_PROCESS_PRIORITY];
+ProcessList* ProcessReadyList[MAX_PROCESS_PRIORITY];
 //全局阻塞列表
-ProcessList ProcessBlockingList[MAX_PROCESS_PRIORITY];
+ProcessList* ProcessBlockingList;
 //全局删除列表
-ProcessList ProcessDeleteList[MAX_PROCESS_PRIORITY];
+ProcessList* ProcessDeleteList;
 
 
 //系统关键记录
 //运行的进程数量
+//!!!!!!一定要记得初始化!!!!!
 volatile unsigned int CurrentProcessNumer;
 //最高优先级的进程
 volatile unsigned int TopPriorityReadyProcess;
 //调度器的运状态
 SCHEDULER_STATUS schdulerStatus;
+
+
 

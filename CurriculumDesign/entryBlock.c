@@ -12,9 +12,9 @@ void test(void*a) {
 	/*int* number = &(int*)a;
 	int number1 = &number;*/
 	int number1 = 0;
-	while (number1<=3) {
-		Sleep(1000);
-		printf("%d\n", number1++);
+	while (number1++<=3) {
+		Sleep(50);
+		printf("%s\n", (char*)a);
 	}
 }
 int main() {
@@ -51,15 +51,17 @@ int main() {
 	//for (int j = 0; j < 30; j++) {
 	//	free(pcb[j]);
 	//}
+
 	initOSstackSimulator();
-	
+	CurrentProcessNumer = 0;
 	PCB_t **pcb=malloc(sizeof(PCB));
 	char name[MAX_NAME_LENGTH] = "this is a process";
 
 	CreateNewProcess(test, name, 1, NULL, 0, pcb); 
-	printf("%u\n%u\n", (*pcb)->IDofPCB, (*pcb)->processPriority);
-	int a = 0;
-	(*pcb)->function( a);
+	printf("%u\n%u\n%d", (*pcb)->IDofPCB, (*pcb)->processPriority,(*pcb)->hostItem->hostList->numberOfProcesses);
+	char a[20] = "process is running";
+	(*pcb)->function(a);
+   
 	free(pcb);
 	system("pause");
 	return 0;
