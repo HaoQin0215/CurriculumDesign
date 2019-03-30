@@ -58,6 +58,9 @@ int main() {
 
 	CreateNewProcess(test, name, 1, NULL, 0, pcb); 
 	printf("%u\n%u\n", (*pcb)->IDofPCB, (*pcb)->processPriority);
+	int a = 0;
+	(*pcb)->function( a);
+	free(pcb);
 	system("pause");
 	return 0;
 }
