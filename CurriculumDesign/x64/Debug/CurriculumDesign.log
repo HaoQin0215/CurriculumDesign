@@ -1,2 +1,4 @@
-﻿  list.c
-  CurriculumDesign.vcxproj -> D:\c++_code\CurriculumDesign\x64\Debug\CurriculumDesign.exe
+﻿  entryBlock.c
+x64\Debug\process.obj : warning LNK4042: 对象被多次指定；已忽略多余的指定
+entryBlock.obj : error LNK2019: 无法解析的外部符号 CreateNewProcess，该符号在函数 main 中被引用
+D:\c++_code\CurriculumDesign\x64\Debug\CurriculumDesign.exe : fatal error LNK1120: 1 个无法解析的外部命令

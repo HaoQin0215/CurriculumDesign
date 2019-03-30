@@ -46,7 +46,23 @@ typedef struct ProcessList {
 #define GET_priorityValue(Item) ((Item)->priorityValue)
 //设置当前列表项优先级
 #define SET_priorityValue(Item,value) ((Item)->priorityValue=value)
+//判断当前列表是否为空
+#define LIST_IS_EMPTY(list) ((list->numberOfProcesses==0)?1:0)
 
+//时间片到时切换列表项
+#define listChangeListItemWithTime(pcb,list) {\
+	ProcessList*const ConstList = (list);\
+	ConstList->ListItemIndex = ConstList->ListItemIndex->next;\
+	if ((void*)ConstList->ListItemIndex == (void*)ConstList->lastItem) {\
+		ConstList->ListItemIndex = ConstList->ListItemIndex->next;\
+	}\
+	pcb = ConstList->ListItemIndex->PCB_block;\
+}\
+//检查列表是否被初始化
+#define listIS_INITIAL(list) (list->lastItem->priorityValue==MAX_subordinateListItemValue)
+
+//设置列表项值
+#define listSetListItemValue(listItem,value) ((listItem)->runTime=value)
 
 void InitProcessList(ProcessList* list);
 
