@@ -53,11 +53,11 @@ int main() {
 	//}
 	initOSstackSimulator();
 	
-	PCB_t pcb;
+	PCB_t **pcb=malloc(sizeof(PCB));
 	char name[MAX_NAME_LENGTH] = "this is a process";
 
-	CreateNewProcess(test, name, 1, NULL, 0, &pcb); 
-	printf("%u\n%u\n", pcb.IDofPCB, pcb.processPriority);
+	CreateNewProcess(test, name, 1, NULL, 0, pcb); 
+	printf("%u\n%u\n", (*pcb)->IDofPCB, (*pcb)->processPriority);
 	system("pause");
 	return 0;
 }

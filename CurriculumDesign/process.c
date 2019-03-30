@@ -12,7 +12,7 @@ unsigned int topProrityProcess = TopPriorityReadyProcess;\
 }\
 
 int CreateNewProcess(ProcessFunction_t function, const char * const name, const unsigned int stackLength, 
-					void * const parameters, unsigned int prority, PCB * pcb)
+					void * const parameters, unsigned int prority, PCB**pcb)
 {
 	PCB_t* newPCB;
 	int createResult;
@@ -37,7 +37,7 @@ int CreateNewProcess(ProcessFunction_t function, const char * const name, const 
 		
 	}
 	
-	pcb = newPCB;
+	*pcb = newPCB;
 
 	return createResult;
 }
@@ -70,6 +70,8 @@ void InitialNewProcess(ProcessFunction_t function, const char * const name,
 
 
 }
+
+
 
 void addProcessToReadyList(PCB_t * newPcb)
 {
