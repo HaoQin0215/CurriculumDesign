@@ -3,7 +3,12 @@
 #include<stdlib.h>
 #include<time.h>
 
-
+typedef enum {
+	LISTReady,
+    LISTBlocking,
+	LISTDelete,
+	LISTonINIT
+}LIST_STATUS;
 
 typedef struct ProcessList ProcessList;
 typedef struct ListItem ListItem;
@@ -28,7 +33,7 @@ typedef struct ProcessList {
 	volatile unsigned numberOfProcesses;
 	void* ListItemIndex;
 	ListItem* lastItem;
-	void * listType;
+	LIST_STATUS listType;
 	
 }ProcessList;
 
@@ -48,6 +53,7 @@ typedef struct ProcessList {
 #define SET_priorityValue(Item,value) ((Item)->priorityValue=value)
 //判断当前列表是否为空
 #define LIST_IS_EMPTY(list) ((list->numberOfProcesses==0)?1:0)
+
 
 //时间片到时切换列表项
 #define listChangeListItemWithTime(pcb,list) {\
@@ -74,6 +80,7 @@ void InsertItemToListEnd(ListItem*item, ProcessList* list);
 
 int DeleteFromList(ListItem*item);
 
+void SET_LIST_STATE(ProcessList* list, LIST_STATUS status);
 
 
 

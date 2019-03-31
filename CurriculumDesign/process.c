@@ -29,6 +29,8 @@ int initStaticLists()
 		ProcessReadyList[i]->lastItem = ProcessReadyListLastItem[i];
 
 		InitProcessList(ProcessReadyList[i]);
+
+		SET_LIST_STATE(ProcessReadyList[i], LISTReady);
 	}
 	ProcessBlockingList = (ProcessList*)malloc(sizeof(ProcessList));
 
@@ -38,6 +40,10 @@ int initStaticLists()
 
 	InitProcessList(ProcessBlockingList);
 
+
+	SET_LIST_STATE(ProcessBlockingList,LISTBlocking);
+
+
 	ProcessDeleteList = (ProcessList*)malloc(sizeof(ProcessList));
 
 	InitListItem(ProcessDeleteListLastItem);
@@ -45,6 +51,8 @@ int initStaticLists()
 	ProcessDeleteList->lastItem = ProcessDeleteListLastItem;
 
 	InitProcessList(ProcessDeleteList);
+
+	SET_LIST_STATE(ProcessDeleteList,LISTDelete);
 
 	for (int i = 0; i < MAX_PROCESS_PRIORITY; i++) {
 
@@ -100,6 +108,8 @@ int CreateNewProcess(ProcessFunction_t function, const char * const name, const 
 			InitialNewProcess(function, name, stackLength, parameters, prority, newPCB);
 
 			addProcessToReadyList(newPCB);
+
+			newPCB->status = READY;
 
 			createResult = 1;
 
@@ -172,6 +182,9 @@ void addProcessToReadyList(PCB_t * newPcb)
 
 				InsertItemIntoProcessList(newListItem,ProcessReadyList[prority]);
 
+				/*newListItem->PCB_block.status = READY;*/
+				
+
 				CurrentProcessNumer++;
 			}
 		}
@@ -215,6 +228,37 @@ void addProcessToReadyList(PCB_t * newPcb)
 		CurrentProcessNumer++;
 
 	}
+}
+
+int DeleteProcess(PCB * pcb)
+{
+	PCB* pcbToDelete=pcb;
+	ListItem* hostItemOfpcbToDelete = pcbToDelete->hostItem;
+	int preNumber = hostItemOfpcbToDelete->hostList->numberOfProcesses;
+	int result = 0;
+	if ( DeleteFromList(hostItemOfpcbToDelete!=(preNumber-1))) {
+		printf("½ø³ÌÉ¾³ýÊ§°Ü");
+		result = 0;
+	}
+	else {
+		if(0==deletePcbFromStack(pcb)) return 0;
+		if (pcbToDelete == CurrentPCB_pointer) {
+			if (pcbToDelete->hostItem->hostList->numberOfProcesses == 0) {
+				CurrentPCB_pointer = NULL;
+			}
+			else {
+				CurrentPCB_pointer = pcbToDelete->hostItem->hostList->lastItem->next;
+			}
+			CurrentProcessNumer--;
+		}
+		else {
+			CurrentProcessNumer--;
+		}
+		result = 1;
+		myFree(pcb);
+	}
+
+	return result;
 }
 
 void schedulerStopAll(void)

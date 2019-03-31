@@ -59,10 +59,12 @@ int main() {
 
 	CreateNewProcess(test, name, 1, NULL, 0, pcb); 
 	printf("%u\n%u\n%d", (*pcb)->IDofPCB, (*pcb)->processPriority,(*pcb)->hostItem->hostList->numberOfProcesses);
+	printf("%d", (*pcb)->status == READY);
 	char a[20] = "process is running";
 	(*pcb)->function(a);
-   
-	free(pcb);
+    
+	DeleteProcess(*pcb);
+	
 	system("pause");
 	return 0;
 }

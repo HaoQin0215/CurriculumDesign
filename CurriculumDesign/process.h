@@ -1,6 +1,8 @@
 
 #include"pcbUtil.h"
 
+#define GET_PCB_STATUS(pcb) (pcb->status)
+
 
 	int initStaticLists();
 
@@ -16,7 +18,7 @@
 
 	void addProcessToReadyList(PCB_t*newPcb);
 
-	int DeleteProcess();
+	int DeleteProcess(PCB* pcb);
 	int BlockedProcess();
 	int WakeupProcess();
 

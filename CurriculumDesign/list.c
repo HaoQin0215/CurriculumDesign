@@ -11,7 +11,7 @@ void InitProcessList(ProcessList * list)
 	
 	list->lastItem->next = list->lastItem;
 
-	list->listType = NULL;
+	list->listType = LISTonINIT;
 
 	list->ListItemIndex = NULL;
 
@@ -44,6 +44,7 @@ void InsertItemIntoProcessList(ListItem * item, ProcessList * list)
 	item->next->previous = item;
 	itemIterator->next = item;
 	item->hostList = list;
+
 	
 	list->numberOfProcesses += 1;
 }
@@ -83,6 +84,13 @@ int DeleteFromList(ListItem * item)
 	}
 	item->hostList = NULL;
 	hostList->numberOfProcesses -= 1;
-	
+
+	free(item);
+
 	return hostList->numberOfProcesses;
+}
+
+void SET_LIST_STATE(ProcessList * list,LIST_STATUS status)
+{
+	list->listType = status;
 }
