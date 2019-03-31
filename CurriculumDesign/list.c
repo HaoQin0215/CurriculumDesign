@@ -83,7 +83,7 @@ int DeleteFromList(ListItem * item)
 		hostList->ListItemIndex = item->previous;
 	}
 	item->hostList = NULL;
-	hostList->numberOfProcesses -= 1;
+	hostList->numberOfProcesses --;
 
 	free(item);
 

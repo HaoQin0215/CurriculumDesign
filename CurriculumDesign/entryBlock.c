@@ -52,19 +52,24 @@ int main() {
 	//	free(pcb[j]);
 	//}
 
+	
 	initOSstackSimulator();
 	CurrentProcessNumer = 0;
 	PCB_t **pcb=malloc(sizeof(PCB));
 	char name[MAX_NAME_LENGTH] = "this is a process";
 
 	CreateNewProcess(test, name, 1, NULL, 0, pcb); 
-	printf("%u\n%u\n%d", (*pcb)->IDofPCB, (*pcb)->processPriority,(*pcb)->hostItem->hostList->numberOfProcesses);
-	printf("%d", (*pcb)->status == READY);
+	//printf("%d\n", (*STATIC_OS_STACK)->currentDeepth);//1
 	char a[20] = "process is running";
 	(*pcb)->function(a);
-    
-	DeleteProcess(*pcb);
-	
+	//printf("%d\n",(*pcb)->hostItem->hostList->numberOfProcesses);
+	printf("%d\n",DeleteProcess(*pcb));
+
+
+	printf("%d\n%d\n", CurrentProcessNumer,ProcessReadyList[(*pcb)->processPriority]->numberOfProcesses);
+	printf("%d\n", (*STATIC_OS_STACK)->currentDeepth);
+
+	free(STATIC_OS_STACK);
 	system("pause");
 	return 0;
 }

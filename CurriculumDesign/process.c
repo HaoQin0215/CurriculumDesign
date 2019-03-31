@@ -233,27 +233,36 @@ void addProcessToReadyList(PCB_t * newPcb)
 int DeleteProcess(PCB * pcb)
 {
 	PCB* pcbToDelete=pcb;
+	
 	ListItem* hostItemOfpcbToDelete = pcbToDelete->hostItem;
 	int preNumber = hostItemOfpcbToDelete->hostList->numberOfProcesses;
 	int result = 0;
-	if ( DeleteFromList(hostItemOfpcbToDelete!=(preNumber-1))) {
-		printf("进程删除失败");
+	//如果要删除的进程是当前进程
+	//将当前列表指针指向列表项的下一个
+	if (pcbToDelete == CurrentPCB_pointer) {
+		if (pcbToDelete->hostItem->hostList->numberOfProcesses == 1) {
+			CurrentPCB_pointer = NULL;
+		}
+		else {
+			CurrentPCB_pointer = pcbToDelete->hostItem->hostList->lastItem->next->PCB_block;
+		}
+		CurrentProcessNumer--;
+	}
+	else {
+		CurrentProcessNumer--;
+	}
+
+	if ( DeleteFromList(hostItemOfpcbToDelete)!=(preNumber-1)) {
+		//printf("进程删除失败\n");
 		result = 0;
 	}
 	else {
-		if(0==deletePcbFromStack(pcb)) return 0;
-		if (pcbToDelete == CurrentPCB_pointer) {
-			if (pcbToDelete->hostItem->hostList->numberOfProcesses == 0) {
-				CurrentPCB_pointer = NULL;
-			}
-			else {
-				CurrentPCB_pointer = pcbToDelete->hostItem->hostList->lastItem->next;
-			}
-			CurrentProcessNumer--;
+		if (0 == deletePcbFromStack(pcb->IDofPCB)) {
+			//printf("堆栈清除失败\n");
+			return 0;
 		}
-		else {
-			CurrentProcessNumer--;
-		}
+		
+		
 		result = 1;
 		myFree(pcb);
 	}

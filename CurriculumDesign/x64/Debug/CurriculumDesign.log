@@ -1,19 +1,2 @@
 ﻿  entryBlock.c
-  list.c
-  process.c
-d:\c++_code\curriculumdesign\curriculumdesign\process.c(132): warning C4047: “=”:“char *”与“const char”的间接级别不同
-d:\c++_code\curriculumdesign\curriculumdesign\process.c(135): warning C4047: “=”:“char *”与“const char”的间接级别不同
-d:\c++_code\curriculumdesign\curriculumdesign\process.c(239): warning C4047: “!=”:“ListItem *”与“int”的间接级别不同
-d:\c++_code\curriculumdesign\curriculumdesign\process.c(239): warning C4047: “函数”:“ListItem *”与“int”的间接级别不同
-d:\c++_code\curriculumdesign\curriculumdesign\process.c(239): warning C4024: “DeleteFromList”: 形参和实参 1 的类型不同
-d:\c++_code\curriculumdesign\curriculumdesign\process.c(244): warning C4047: “函数”:“int”与“PCB *”的间接级别不同
-d:\c++_code\curriculumdesign\curriculumdesign\process.c(244): warning C4024: “deletePcbFromStack”: 形参和实参 1 的类型不同
-d:\c++_code\curriculumdesign\curriculumdesign\process.c(250): warning C4133: “=”: 从“ListItem *”到“PCB_t *volatile ”的类型不兼容
-  stackSimulator.c
-d:\c++_code\curriculumdesign\curriculumdesign\stacksimulator.c(67): warning C4047: “=”:“void *volatile ”与“int”的间接级别不同
-  正在生成代码...
-  process.h
-x64\Debug\process.obj : warning LNK4042: 对象被多次指定；已忽略多余的指定
-entryBlock.obj : error LNK2019: 无法解析的外部符号 CreateNewProcess，该符号在函数 main 中被引用
-entryBlock.obj : error LNK2019: 无法解析的外部符号 DeleteProcess，该符号在函数 main 中被引用
-D:\c++_code\CurriculumDesign\x64\Debug\CurriculumDesign.exe : fatal error LNK1120: 2 个无法解析的外部命令
+  CurriculumDesign.vcxproj -> D:\c++_code\CurriculumDesign\x64\Debug\CurriculumDesign.exe

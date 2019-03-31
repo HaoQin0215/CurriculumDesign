@@ -19,7 +19,8 @@ typedef struct OSstack {
 	OSstackSimulatorItem_t*lastItem;
 }OSstack;
 
-static OSstack *STATIC_OS_STACK;
+//全局堆栈表头
+OSstack **STATIC_OS_STACK;
 
 int initOSstackSimulator();
 
