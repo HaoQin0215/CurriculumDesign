@@ -1,4 +1,4 @@
-#include<malloc.h>
+ï»¿#include<malloc.h>
 #include<stdio.h>
 #include<stdlib.h>
 #include<Windows.h>
@@ -12,7 +12,7 @@ void test(void*a) {
 	/*int* number = &(int*)a;
 	int number1 = &number;*/
 	int number1 = 0;
-	while (number1++<=3) {
+	while (number1++ <= 3) {
 		Sleep(50);
 		printf("%s\n", (char*)a);
 	}
@@ -38,13 +38,13 @@ int main() {
 	//free(list);
 	//free(listEnditem);
 
-	
+
 	//initOSstackSimulator();
 	//PCB_t *pcb[30];
 	//for (int i = 0; i < 30; i++) {
 	//	pcb[i] = (PCB_t*)malloc(sizeof(PCB_t));
 	//	if (0 == addPcbToStack(pcb[i])) {
-	//		printf("¼ÓÈë¶ÑÕ»Ê§°Ü");
+	//		printf("åŠ å…¥å †æ ˆå¤±è´¥");
 	//	};
 	//	printf("%d", pcb[i]->stackPosition);
 	//}
@@ -52,21 +52,21 @@ int main() {
 	//	free(pcb[j]);
 	//}
 
-	
+
 	initOSstackSimulator();
 	CurrentProcessNumer = 0;
-	PCB_t **pcb=malloc(sizeof(PCB));
+	PCB_t **pcb = malloc(sizeof(PCB));
 	char name[MAX_NAME_LENGTH] = "this is a process";
 
-	CreateNewProcess(test, name, 1, NULL, 0, pcb); 
+	CreateNewProcess(test, name, 1, NULL, 0, pcb);
 	//printf("%d\n", (*STATIC_OS_STACK)->currentDeepth);//1
 	char a[20] = "process is running";
 	(*pcb)->function(a);
 	//printf("%d\n",(*pcb)->hostItem->hostList->numberOfProcesses);
-	printf("%d\n",DeleteProcess(*pcb));
+	printf("%d\n", DeleteProcess(*pcb));
 
 
-	printf("%d\n%d\n", CurrentProcessNumer,ProcessReadyList[(*pcb)->processPriority]->numberOfProcesses);
+	printf("%d\n%d\n", CurrentProcessNumer, ProcessReadyList[(*pcb)->processPriority]->numberOfProcesses);
 	printf("%d\n", (*STATIC_OS_STACK)->currentDeepth);
 
 	free(STATIC_OS_STACK);

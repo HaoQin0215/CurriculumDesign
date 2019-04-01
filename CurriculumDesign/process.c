@@ -1,4 +1,4 @@
-#include "process.h"
+ï»¿#include "process.h"
 #include"stackSimulator.h"
 
 #define FindTopProrityProcess()\
@@ -16,8 +16,8 @@ int initStaticLists()
 
 	int result = 1;
 	ListItem* ProcessReadyListLastItem[MAX_PROCESS_PRIORITY];
-	ListItem* ProcessBlockingListLastItem= (ListItem*)malloc(sizeof(ListItem));
-	ListItem* ProcessDeleteListLastItem= (ListItem*)malloc(sizeof(ListItem));
+	ListItem* ProcessBlockingListLastItem = (ListItem*)malloc(sizeof(ListItem));
+	ListItem* ProcessDeleteListLastItem = (ListItem*)malloc(sizeof(ListItem));
 	for (int i = 0; i < MAX_PROCESS_PRIORITY; i++) {
 
 		ProcessReadyList[i] = (ProcessList*)malloc(sizeof(ProcessList));
@@ -41,7 +41,7 @@ int initStaticLists()
 	InitProcessList(ProcessBlockingList);
 
 
-	SET_LIST_STATE(ProcessBlockingList,LISTBlocking);
+	SET_LIST_STATE(ProcessBlockingList, LISTBlocking);
 
 
 	ProcessDeleteList = (ProcessList*)malloc(sizeof(ProcessList));
@@ -52,7 +52,7 @@ int initStaticLists()
 
 	InitProcessList(ProcessDeleteList);
 
-	SET_LIST_STATE(ProcessDeleteList,LISTDelete);
+	SET_LIST_STATE(ProcessDeleteList, LISTDelete);
 
 	for (int i = 0; i < MAX_PROCESS_PRIORITY; i++) {
 
@@ -62,8 +62,8 @@ int initStaticLists()
 
 		}
 	}
-	if (ProcessBlockingList == NULL || ProcessDeleteList == NULL || ProcessBlockingListLastItem==NULL
-		|| ProcessDeleteListLastItem==NULL) {
+	if (ProcessBlockingList == NULL || ProcessDeleteList == NULL || ProcessBlockingListLastItem == NULL
+		|| ProcessDeleteListLastItem == NULL) {
 		result = 0;
 	}
 	if (result == 0) {
@@ -86,15 +86,15 @@ void freeStaticLists()
 	free(ProcessBlockingList);
 
 	free(ProcessDeleteList);
-	
+
 }
 
 int CreateNewProcess(ProcessFunction_t function, const char * const name, const unsigned int stackLength,
-					void * const parameters, unsigned int prority, PCB**pcb)
+	void * const parameters, unsigned int prority, PCB**pcb)
 {
 	PCB_t* newPCB;
 	int createResult;
-	
+
 	newPCB = myMalloc(sizeof(PCB_t));
 	if (newPCB != NULL) {
 		if (addPcbToStack(newPCB) == 0) {
@@ -114,15 +114,15 @@ int CreateNewProcess(ProcessFunction_t function, const char * const name, const 
 			createResult = 1;
 
 		}
-		
+
 	}
-	
+
 	*pcb = newPCB;
 
 	return createResult;
 }
 
-void InitialNewProcess(ProcessFunction_t function, const char * const name, 
+void InitialNewProcess(ProcessFunction_t function, const char * const name,
 	const unsigned int stackLength, void * const parameters, unsigned int prority, PCB * pcb)
 {
 
@@ -138,14 +138,14 @@ void InitialNewProcess(ProcessFunction_t function, const char * const name,
 
 	pcb->stackAddress.length = stackLength;
 
-	if (prority >= MAX_PROCESS_PRIORITY||prority<0) {
-		printf("½ø³ÌÓÅÏÈ¼¶´íÎó");
+	if (prority >= MAX_PROCESS_PRIORITY || prority < 0) {
+		printf("è¿›ç¨‹ä¼˜å…ˆçº§é”™è¯¯");
 		pcb->processPriority = 0;
 	}
 	else {
 		pcb->processPriority = prority;
 	}
-	
+
 	pcb->IDofPCB = pcb->stackPosition;
 
 
@@ -157,18 +157,18 @@ void addProcessToReadyList(PCB_t * newPcb)
 {
 
 	int prority = newPcb->processPriority;
-	//µ±Ç°½ø³ÌÖ¸ÕëÊÇ·ñÎª¿Õ
+	//å½“å‰è¿›ç¨‹æŒ‡é’ˆæ˜¯å¦ä¸ºç©º
 	if (CurrentPCB_pointer == NULL) {
 		CurrentPCB_pointer = newPcb;
-		//µ±Ç°½ø³ÌÊýÁ¿Îª0
+		//å½“å‰è¿›ç¨‹æ•°é‡ä¸º0
 		if (CurrentProcessNumer == 0) {
 			int initResult = initStaticLists();
-			//³õÊ¼»¯¾²Ì¬È«¾ÖÁÐ±íÊ§°Ü
+			//åˆå§‹åŒ–é™æ€å…¨å±€åˆ—è¡¨å¤±è´¥
 			if (initResult == 0) {
-				printf("¾ÍÐ÷ÁÐ±í³õÊ¼»¯´íÎó\n");
+				printf("å°±ç»ªåˆ—è¡¨åˆå§‹åŒ–é”™è¯¯\n");
 				return;
 			}
-			//³õÊ¼»¯³É¹¦
+			//åˆå§‹åŒ–æˆåŠŸ
 			else {
 				ListItem* newListItem = myMalloc(sizeof(ListItem));
 
@@ -180,25 +180,25 @@ void addProcessToReadyList(PCB_t * newPcb)
 
 				SET_priorityValue(newListItem, newPcb->processPriority);
 
-				InsertItemIntoProcessList(newListItem,ProcessReadyList[prority]);
+				InsertItemIntoProcessList(newListItem, ProcessReadyList[prority]);
 
 				/*newListItem->PCB_block.status = READY;*/
-				
+
 
 				CurrentProcessNumer++;
 			}
 		}
-		//½ø³ÌÊýÁ¿²»ÎªÁã
+		//è¿›ç¨‹æ•°é‡ä¸ä¸ºé›¶
 		else {
 
 		}
 	}
-	//½ø³ÌÖ¸Õë²»Îª¿Õ
+	//è¿›ç¨‹æŒ‡é’ˆä¸ä¸ºç©º
 	else {
-		//µ÷¶ÈÆ÷Ã»ÓÐÖ´ÐÐ
-		if (schdulerStatus ==SCHEDULER_STOP) {
-			//ÐÂ½¨µÄ½ø³ÌÓÅÏÈ¼¶±Èµ±Ç°½ø³ÌÓÅÏÈ¼¶¸ß
-		    //ÇÐ»»ÐÂ½¨½ø³ÌÎªµ±Ç°½ø³Ì
+		//è°ƒåº¦å™¨æ²¡æœ‰æ‰§è¡Œ
+		if (schdulerStatus == SCHEDULER_STOP) {
+			//æ–°å»ºçš„è¿›ç¨‹ä¼˜å…ˆçº§æ¯”å½“å‰è¿›ç¨‹ä¼˜å…ˆçº§é«˜
+			//åˆ‡æ¢æ–°å»ºè¿›ç¨‹ä¸ºå½“å‰è¿›ç¨‹
 			if (newPcb->processPriority >= CurrentPCB_pointer->processPriority) {
 
 				CurrentPCB_pointer = newPcb;
@@ -206,10 +206,10 @@ void addProcessToReadyList(PCB_t * newPcb)
 		}
 		else {
 			if (newPcb->processPriority >= CurrentPCB_pointer->processPriority) {
-				//´ò¶Ïµ÷¶ÈÆ÷£¬ÇÐ»»ÈÎÎñ½ø³Ì
+				//æ‰“æ–­è°ƒåº¦å™¨ï¼Œåˆ‡æ¢ä»»åŠ¡è¿›ç¨‹
 
 				//TODO
-				//TASKYIELDº¯ÊýÊµÏÖ
+				//TASKYIELDå‡½æ•°å®žçŽ°
 			}
 		}
 
@@ -232,13 +232,13 @@ void addProcessToReadyList(PCB_t * newPcb)
 
 int DeleteProcess(PCB * pcb)
 {
-	PCB* pcbToDelete=pcb;
-	
+	PCB* pcbToDelete = pcb;
+
 	ListItem* hostItemOfpcbToDelete = pcbToDelete->hostItem;
 	int preNumber = hostItemOfpcbToDelete->hostList->numberOfProcesses;
 	int result = 0;
-	//Èç¹ûÒªÉ¾³ýµÄ½ø³ÌÊÇµ±Ç°½ø³Ì
-	//½«µ±Ç°ÁÐ±íÖ¸ÕëÖ¸ÏòÁÐ±íÏîµÄÏÂÒ»¸ö
+	//å¦‚æžœè¦åˆ é™¤çš„è¿›ç¨‹æ˜¯å½“å‰è¿›ç¨‹
+	//å°†å½“å‰åˆ—è¡¨æŒ‡é’ˆæŒ‡å‘åˆ—è¡¨é¡¹çš„ä¸‹ä¸€ä¸ª
 	if (pcbToDelete == CurrentPCB_pointer) {
 		if (pcbToDelete->hostItem->hostList->numberOfProcesses == 1) {
 			CurrentPCB_pointer = NULL;
@@ -252,17 +252,17 @@ int DeleteProcess(PCB * pcb)
 		CurrentProcessNumer--;
 	}
 
-	if ( DeleteFromList(hostItemOfpcbToDelete)!=(preNumber-1)) {
-		//printf("½ø³ÌÉ¾³ýÊ§°Ü\n");
+	if (DeleteFromList(hostItemOfpcbToDelete) != (preNumber - 1)) {
+		//printf("è¿›ç¨‹åˆ é™¤å¤±è´¥\n");
 		result = 0;
 	}
 	else {
 		if (0 == deletePcbFromStack(pcb->IDofPCB)) {
-			//printf("¶ÑÕ»Çå³ýÊ§°Ü\n");
+			//printf("å †æ ˆæ¸…é™¤å¤±è´¥\n");
 			return 0;
 		}
-		
-		
+
+
 		result = 1;
 		myFree(pcb);
 	}
@@ -272,7 +272,7 @@ int DeleteProcess(PCB * pcb)
 
 void schedulerStopAll(void)
 {
-	
+
 }
 
 void schedulerResume(void)

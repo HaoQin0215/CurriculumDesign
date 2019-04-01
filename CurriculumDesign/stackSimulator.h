@@ -1,7 +1,7 @@
-#pragma once
+﻿#pragma once
 #include<stdio.h>
 #include"pcbUtil.h"
-#define MAX_STACK_LENGTH 20
+#define MAX_STACK_LENGTH  20
 
 typedef struct OSstackSimulatorItem {
 	PCB_t* pcb;
@@ -19,7 +19,7 @@ typedef struct OSstack {
 	OSstackSimulatorItem_t*lastItem;
 }OSstack;
 
-//ȫ�ֶ�ջ��ͷ
+//全局堆栈表头
 OSstack **STATIC_OS_STACK;
 
 int initOSstackSimulator();
@@ -29,8 +29,3 @@ int addPcbToStack(PCB_t* newPcb);
 int deletePcbFromStack(int idOfPcb);
 
 PCB_t* findPCB_ById(int id);
-
-
-
-
-
