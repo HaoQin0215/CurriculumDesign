@@ -1,23 +1,30 @@
-﻿
+
 #include"pcbUtil.h"
 
-int CreateNewProcess(ProcessFunction_t function,
-	const char* const name, const unsigned int stackLength,
-	void* const parameters, unsigned int prority,
-	PCB* pcb);
+#define GET_PCB_STATUS(pcb) (pcb->status)
 
-void InitialNewProcess(ProcessFunction_t function, const char* const name, const unsigned int stackLength,
-	void* const parameters, unsigned int prority, PCB* pcb);
 
-void addProcessToReadyList(PCB_t*newPcb);
+	int initStaticLists();
 
-int DeleteProcess();
-int BlockedProcess();
-int WakeupProcess();
+	void freeStaticLists();
 
-void schedulerStopAll(void);
-void schedulerResume(void);
+	int CreateNewProcess(ProcessFunction_t function,
+		const char* const name, const unsigned int stackLength,
+		void* const parameters, unsigned int prority,
+		PCB** pcb);
 
-void* myMalloc(size_t newSize);
+	void InitialNewProcess(ProcessFunction_t function, const char* const name, const unsigned int stackLength,
+		void* const parameters, unsigned int prority, PCB*pcb);
 
-void myFree(void*pointer);
+	void addProcessToReadyList(PCB_t*newPcb);
+
+	int DeleteProcess(PCB* pcb);
+	int BlockedProcess();
+	int WakeupProcess();
+
+	void schedulerStopAll(void);
+	void schedulerResume(void);
+
+	void* myMalloc(size_t newSize);
+
+	void myFree(void*pointer);

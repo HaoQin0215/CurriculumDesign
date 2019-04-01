@@ -1,8 +1,8 @@
-ï»¿#include "stackSimulator.h"
+#include "stackSimulator.h"
 
 int initOSstackSimulator()
-{
-	STATIC_OS_STACK = (OSstack*)malloc(sizeof(OSstack));
+{  
+	OSstack* newStack =(OSstack*)malloc(sizeof(OSstack));
 
 	OSstackSimulatorItem* newItem = (OSstackSimulatorItem*)malloc(sizeof(OSstackSimulatorItem));
 
@@ -10,26 +10,30 @@ int initOSstackSimulator()
 
 	//OSstack* mystack = STATIC_OS_STACK;
 
-	if (STATIC_OS_STACK == NULL || newItem == NULL || newItem2 == NULL) return 0;
+	if (newStack == NULL||newItem==NULL||newItem2==NULL ) return 0;
 
 	else {
-		STATIC_OS_STACK->currentDeepth = 0;
+		newStack->currentDeepth = 0;
 
-		STATIC_OS_STACK->totalLength = MAX_STACK_LENGTH;
+		newStack->totalLength = MAX_STACK_LENGTH;
 
-		STATIC_OS_STACK->startSimulatorItem = newItem;
+		newStack->startSimulatorItem = newItem;
 
-		STATIC_OS_STACK->lastItem = newItem2;
+		newStack->lastItem = newItem2;
 
-		STATIC_OS_STACK->startSimulatorItem->pcb = NULL;
+		newStack->startSimulatorItem->pcb = NULL;
 
-		STATIC_OS_STACK->lastItem->pcb = NULL;
+		newStack->lastItem->pcb = NULL;
 
-		STATIC_OS_STACK->startSimulatorItem->next = STATIC_OS_STACK->startSimulatorItem;
+		newStack->startSimulatorItem->next = newStack->startSimulatorItem;
 
-		STATIC_OS_STACK->lastItem->next = STATIC_OS_STACK->lastItem;
+		newStack->lastItem->next = newStack->lastItem;
 
-		STATIC_OS_STACK->startSimulatorItem->index = 0;
+		newStack->startSimulatorItem->index = 0;
+
+		STATIC_OS_STACK = malloc(sizeof(OSstack));
+
+		*STATIC_OS_STACK = newStack;
 
 		return 1;
 	}
@@ -37,7 +41,7 @@ int initOSstackSimulator()
 
 int addPcbToStack(PCB_t * newPcb)
 {
-	if (STATIC_OS_STACK->currentDeepth == MAX_STACK_LENGTH) return 0;
+	if ((*STATIC_OS_STACK)->currentDeepth == MAX_STACK_LENGTH) return 0;
 
 	OSstackSimulatorItem_t *item = (OSstackSimulatorItem*)malloc(sizeof(OSstackSimulatorItem));
 
@@ -47,28 +51,30 @@ int addPcbToStack(PCB_t * newPcb)
 
 	item->functionValue = newPcb->function;
 
-	item->next = item;
+	
 
 	OSstackSimulatorItem_t*interator;
 
-	for (interator = STATIC_OS_STACK->startSimulatorItem; ; interator = interator->next)
+	for (interator = (*STATIC_OS_STACK)->startSimulatorItem; ; interator = interator->next)
 	{
 		//interator->next == interator
-		if (interator == interator) {
+		if (interator->next== (*STATIC_OS_STACK)->startSimulatorItem) {
 			break;
 		}
 	}
 	interator->next = item;
-
+	
 	item->index = interator->index + 1;
 
 	newPcb->stackPosition = item->index;
 
 	newPcb->stackAddress.start = item->index;
 
-	STATIC_OS_STACK->currentDeepth += 1;
+	item->next = (*STATIC_OS_STACK)->startSimulatorItem;
 
-	//printf("%d\n", STATIC_OS_STACK->currentDeepth);
+	(*STATIC_OS_STACK)->currentDeepth+=1;
+
+	//printf("%d\n", (*STATIC_OS_STACK)->currentDeepth);
 
 	return 1;
 }
@@ -77,22 +83,26 @@ int deletePcbFromStack(int idOfPcb)
 {
 	int result;
 	OSstackSimulatorItem* iterator;
-	iterator = STATIC_OS_STACK->startSimulatorItem;
-	if (STATIC_OS_STACK->currentDeepth == 0) {
+	iterator = (*STATIC_OS_STACK)->startSimulatorItem;
+	if ((*STATIC_OS_STACK)->currentDeepth == 0) {
+		//printf("¶ÑÕ»Îª¿Õ\n");
 		result = 0;
 	}
 	else {
-		PCB_t*pcb = findPCB_ById(idOfPcb);
+		PCB_t*pcb=findPCB_ById(idOfPcb);
 		if (pcb == NULL) {
+			printf("Î´ÕÒµ½pcb\n");
 			result = 0;
 		}
 		else {
+
 			for (;; iterator = iterator->next) {
 				if (iterator->next->index == idOfPcb) {
 					iterator->next = iterator->next->next;
 					free(iterator->next->pcb);
 					free(iterator->next);
-
+					(*STATIC_OS_STACK)->currentDeepth--;
+					break;
 				}
 			}
 			result = 1;
@@ -104,10 +114,21 @@ int deletePcbFromStack(int idOfPcb)
 PCB_t* findPCB_ById(int id)
 {
 	OSstackSimulatorItem_t*iterator;
-	for (iterator = STATIC_OS_STACK->startSimulatorItem;; iterator = iterator->next) {
-		if (iterator->index = id) {
-			return iterator->pcb;
+	PCB_t*result =NULL;
+	if ((*STATIC_OS_STACK)->currentDeepth != 0) {
+		iterator = (*STATIC_OS_STACK)->startSimulatorItem;
+		for (;;) {
+			if (iterator->index = id) {
+				result = iterator->pcb;
+			}
+			
+			//printf("%d", iterator->index);
+			if (iterator->next == (*STATIC_OS_STACK)->startSimulatorItem) break;
+			iterator = iterator->next;
+			
 		}
 	}
-	return NULL;
+	return result;
 }
+
+

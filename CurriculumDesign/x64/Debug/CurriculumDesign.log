@@ -1,10 +1,10 @@
 ﻿  entryBlock.c
-d:\codefile\vs-workspace\curriculumdesign\curriculumdesign\entryblock.c(59): warning C4047: “函数”:“PCB *”与“PCB_t **”的间接级别不同
-d:\codefile\vs-workspace\curriculumdesign\curriculumdesign\entryblock.c(59): warning C4024: “CreateNewProcess”: 形参和实参 6 的类型不同
-d:\codefile\vs-workspace\curriculumdesign\curriculumdesign\entryblock.c(62): warning C4022: “通过指针的函数”: 指针与实参 1 不匹配
+  list.c
+  pcbUtil.c
   process.c
-d:\codefile\vs-workspace\curriculumdesign\curriculumdesign\process.c(16): warning C4028: 形参 6 与声明不同
-d:\codefile\vs-workspace\curriculumdesign\curriculumdesign\process.c(52): warning C4047: “=”:“char *”与“const char”的间接级别不同
-d:\codefile\vs-workspace\curriculumdesign\curriculumdesign\process.c(55): warning C4047: “=”:“char *”与“const char”的间接级别不同
+d:\codefile\vs-workspace\curriculumdesign\curriculumdesign\process.c(132): warning C4047: “=”:“char *”与“const char”的间接级别不同
+d:\codefile\vs-workspace\curriculumdesign\curriculumdesign\process.c(135): warning C4047: “=”:“char *”与“const char”的间接级别不同
+  stackSimulator.c
+d:\codefile\vs-workspace\curriculumdesign\curriculumdesign\stacksimulator.c(71): warning C4047: “=”:“void *volatile ”与“int”的间接级别不同
   正在生成代码...
   CurriculumDesign.vcxproj -> D:\codefile\vs-workspace\CurriculumDesign\x64\Debug\CurriculumDesign.exe

@@ -1,9 +1,14 @@
-ï»¿#pragma once
+#pragma once
 #include<stdio.h>
 #include<stdlib.h>
 #include<time.h>
 
-
+typedef enum {
+	LISTReady,
+    LISTBlocking,
+	LISTDelete,
+	LISTonINIT
+}LIST_STATUS;
 
 typedef struct ProcessList ProcessList;
 typedef struct ListItem ListItem;
@@ -28,28 +33,29 @@ typedef struct ProcessList {
 	volatile unsigned numberOfProcesses;
 	void* ListItemIndex;
 	ListItem* lastItem;
-	void * listType;
-
+	LIST_STATUS listType;
+	
 }ProcessList;
 
 #define setListPCB_Pointer(ListItem,PCBpointer) ((ListItem)->PCB_block=(void*)PCBpointer)
 
-//å®šä¹‰æœ€å¤šè¿›ç¨‹æ•°
+//¶¨Òå×î¶à½ø³ÌÊý
 #define MAX_PORCESS_NUMBER 20
 
-//å®šä¹‰æœ€ä½Žä¼˜å…ˆçº§
+//¶¨Òå×îµÍÓÅÏÈ¼¶
 #define MAX_subordinateListItemValue 30
 
-//èŽ·å¾—å½“å‰é“¾è¡¨è¿›ç¨‹æ•°
+//»ñµÃµ±Ç°Á´±í½ø³ÌÊý
 #define GET_LIST_NUMBER(List) ((List)->numberOfProcesses)
-//èŽ·å¾—å½“å‰åˆ—è¡¨é¡¹ä¼˜å…ˆçº§
+//»ñµÃµ±Ç°ÁÐ±íÏîÓÅÏÈ¼¶
 #define GET_priorityValue(Item) ((Item)->priorityValue)
-//è®¾ç½®å½“å‰åˆ—è¡¨é¡¹ä¼˜å…ˆçº§
+//ÉèÖÃµ±Ç°ÁÐ±íÏîÓÅÏÈ¼¶
 #define SET_priorityValue(Item,value) ((Item)->priorityValue=value)
-//åˆ¤æ–­å½“å‰åˆ—è¡¨æ˜¯å¦ä¸ºç©º
+//ÅÐ¶Ïµ±Ç°ÁÐ±íÊÇ·ñÎª¿Õ
 #define LIST_IS_EMPTY(list) ((list->numberOfProcesses==0)?1:0)
 
-//æ—¶é—´ç‰‡åˆ°æ—¶åˆ‡æ¢åˆ—è¡¨é¡¹
+
+//Ê±¼äÆ¬µ½Ê±ÇÐ»»ÁÐ±íÏî
 #define listChangeListItemWithTime(pcb,list) {\
 	ProcessList*const ConstList = (list);\
 	ConstList->ListItemIndex = ConstList->ListItemIndex->next;\
@@ -58,10 +64,10 @@ typedef struct ProcessList {
 	}\
 	pcb = ConstList->ListItemIndex->PCB_block;\
 }\
-//æ£€æŸ¥åˆ—è¡¨æ˜¯å¦è¢«åˆå§‹åŒ–
+//¼ì²éÁÐ±íÊÇ·ñ±»³õÊ¼»¯
 #define listIS_INITIAL(list) (list->lastItem->priorityValue==MAX_subordinateListItemValue)
 
-//è®¾ç½®åˆ—è¡¨é¡¹å€¼
+//ÉèÖÃÁÐ±íÏîÖµ
 #define listSetListItemValue(listItem,value) ((listItem)->runTime=value)
 
 void InitProcessList(ProcessList* list);
@@ -73,3 +79,10 @@ void InsertItemIntoProcessList(ListItem* item, ProcessList* list);
 void InsertItemToListEnd(ListItem*item, ProcessList* list);
 
 int DeleteFromList(ListItem*item);
+
+void SET_LIST_STATE(ProcessList* list, LIST_STATUS status);
+
+
+
+
+

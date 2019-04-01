@@ -1,4 +1,4 @@
-ï»¿#pragma once
+#pragma once
 #define MAX_NAME_LENGTH 20
 #define MAX_PROCESS_PRIORITY 30
 #include"list.h"
@@ -14,8 +14,8 @@ typedef enum {
 	DELETED
 }PCB_STATUS;
 
-//å®šä¹‰ä¸€ä¸ªè¿”å›å€¼ä¸ºç©ºçš„å‡½æ•°æŒ‡é’ˆ 
-//ç”¨äºæè¿°è¿›ç¨‹å‡½æ•°
+//¶¨ÒåÒ»¸ö·µ»ØÖµÎª¿ÕµÄº¯ÊıÖ¸Õë 
+//ÓÃÓÚÃèÊö½ø³Ìº¯Êı
 typedef void(*ProcessFunction_t)(void*);
 
 typedef struct PCB_ADDRESSofMEMORY {
@@ -26,41 +26,45 @@ typedef struct PCB_ADDRESSofMEMORY {
 
 typedef struct ProcessControllBlock {
 	volatile PCB_ADDRESSofMEMORY stackAddress;
-	//æŒ‡å‘çš„çˆ¶åˆ—è¡¨é¡¹
-	ListItem hostItem;
-	//è¿›ç¨‹è¿è¡Œæ—¶é—´
+	//Ö¸ÏòµÄ¸¸ÁĞ±íÏî
+	ListItem *hostItem;
+	//½ø³ÌÔËĞĞÊ±¼ä
 	clock_t runTime;
-	//è¿›ç¨‹åç§°
+	//½ø³ÌÃû³Æ
 	char* PCBname[MAX_NAME_LENGTH];
-	//è¿›ç¨‹ä¼˜å…ˆçº§
+	//½ø³ÌÓÅÏÈ¼¶
 	unsigned int processPriority;
-	//è¿›ç¨‹çŠ¶æ€
+	//½ø³Ì×´Ì¬
 	PCB_STATUS status;
-	//è¿›ç¨‹id
+	//½ø³Ìid
 	unsigned int IDofPCB;
-	//è¿›ç¨‹å‡½æ•°
+	//½ø³Ìº¯Êı
 	ProcessFunction_t function;
-	//è¿›ç¨‹åœ¨å †æ ˆä¸­çš„ä½ç½®
+	//½ø³ÌÔÚ¶ÑÕ»ÖĞµÄÎ»ÖÃ
 	int stackPosition;
 }PCB;
 
 
 typedef PCB PCB_t;
-//æ­£åœ¨å¤„ç†çš„è¿›ç¨‹
+//ÕıÔÚ´¦ÀíµÄ½ø³Ì
 PCB_t* volatile CurrentPCB_pointer;
 
-//å…¨å±€å°±ç»ªåˆ—è¡¨
-ProcessList ProcessReadyList[MAX_PROCESS_PRIORITY];
-//å…¨å±€é˜»å¡åˆ—è¡¨
-ProcessList ProcessBlockingList[MAX_PROCESS_PRIORITY];
-//å…¨å±€åˆ é™¤åˆ—è¡¨
-ProcessList ProcessDeleteList[MAX_PROCESS_PRIORITY];
+//È«¾Ö¾ÍĞ÷ÁĞ±í
+ProcessList* ProcessReadyList[MAX_PROCESS_PRIORITY];
+//È«¾Ö×èÈûÁĞ±í
+ProcessList* ProcessBlockingList;
+//È«¾ÖÉ¾³ıÁĞ±í
+ProcessList* ProcessDeleteList;
 
 
-//ç³»ç»Ÿå…³é”®è®°å½•
-//è¿è¡Œçš„è¿›ç¨‹æ•°é‡
+//ÏµÍ³¹Ø¼ü¼ÇÂ¼
+//ÔËĞĞµÄ½ø³ÌÊıÁ¿
+//!!!!!!Ò»¶¨Òª¼ÇµÃ³õÊ¼»¯!!!!!
 volatile unsigned int CurrentProcessNumer;
-//æœ€é«˜ä¼˜å…ˆçº§çš„è¿›ç¨‹
+//×î¸ßÓÅÏÈ¼¶µÄ½ø³Ì
 volatile unsigned int TopPriorityReadyProcess;
-//è°ƒåº¦å™¨çš„è¿çŠ¶æ€
+//µ÷¶ÈÆ÷µÄÔË×´Ì¬
 SCHEDULER_STATUS schdulerStatus;
+
+
+

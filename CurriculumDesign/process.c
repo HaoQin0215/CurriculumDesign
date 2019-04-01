@@ -1,4 +1,4 @@
-ï»¿#include "process.h"
+#include "process.h"
 #include"stackSimulator.h"
 
 #define FindTopProrityProcess()\
@@ -11,12 +11,90 @@ unsigned int topProrityProcess = TopPriorityReadyProcess;\
 	TopPriorityReadyProcess = topProrityProcess;\
 }\
 
+int initStaticLists()
+{
+
+	int result = 1;
+	ListItem* ProcessReadyListLastItem[MAX_PROCESS_PRIORITY];
+	ListItem* ProcessBlockingListLastItem= (ListItem*)malloc(sizeof(ListItem));
+	ListItem* ProcessDeleteListLastItem= (ListItem*)malloc(sizeof(ListItem));
+	for (int i = 0; i < MAX_PROCESS_PRIORITY; i++) {
+
+		ProcessReadyList[i] = (ProcessList*)malloc(sizeof(ProcessList));
+
+		ProcessReadyListLastItem[i] = (ListItem*)malloc(sizeof(ListItem));
+
+		InitListItem(ProcessReadyListLastItem[i]);
+
+		ProcessReadyList[i]->lastItem = ProcessReadyListLastItem[i];
+
+		InitProcessList(ProcessReadyList[i]);
+
+		SET_LIST_STATE(ProcessReadyList[i], LISTReady);
+	}
+	ProcessBlockingList = (ProcessList*)malloc(sizeof(ProcessList));
+
+	InitListItem(ProcessBlockingListLastItem);
+
+	ProcessBlockingList->lastItem = ProcessBlockingListLastItem;
+
+	InitProcessList(ProcessBlockingList);
+
+
+	SET_LIST_STATE(ProcessBlockingList,LISTBlocking);
+
+
+	ProcessDeleteList = (ProcessList*)malloc(sizeof(ProcessList));
+
+	InitListItem(ProcessDeleteListLastItem);
+
+	ProcessDeleteList->lastItem = ProcessDeleteListLastItem;
+
+	InitProcessList(ProcessDeleteList);
+
+	SET_LIST_STATE(ProcessDeleteList,LISTDelete);
+
+	for (int i = 0; i < MAX_PROCESS_PRIORITY; i++) {
+
+		if (ProcessReadyList[i] == NULL) {
+
+			result = 0;
+
+		}
+	}
+	if (ProcessBlockingList == NULL || ProcessDeleteList == NULL || ProcessBlockingListLastItem==NULL
+		|| ProcessDeleteListLastItem==NULL) {
+		result = 0;
+	}
+	if (result == 0) {
+
+		freeStaticLists();
+	}
+	else {
+		result = 1;
+	}
+	return result;
+}
+
+void freeStaticLists()
+{
+	for (int i = 0; i < MAX_PROCESS_PRIORITY; i++) {
+
+		free(ProcessReadyList[i]);
+	}
+
+	free(ProcessBlockingList);
+
+	free(ProcessDeleteList);
+	
+}
+
 int CreateNewProcess(ProcessFunction_t function, const char * const name, const unsigned int stackLength,
-	void * const parameters, unsigned int prority, PCB**pcb)
+					void * const parameters, unsigned int prority, PCB**pcb)
 {
 	PCB_t* newPCB;
 	int createResult;
-
+	
 	newPCB = myMalloc(sizeof(PCB_t));
 	if (newPCB != NULL) {
 		if (addPcbToStack(newPCB) == 0) {
@@ -31,18 +109,20 @@ int CreateNewProcess(ProcessFunction_t function, const char * const name, const 
 
 			addProcessToReadyList(newPCB);
 
+			newPCB->status = READY;
+
 			createResult = 1;
 
 		}
-
+		
 	}
-
+	
 	*pcb = newPCB;
 
 	return createResult;
 }
 
-void InitialNewProcess(ProcessFunction_t function, const char * const name,
+void InitialNewProcess(ProcessFunction_t function, const char * const name, 
 	const unsigned int stackLength, void * const parameters, unsigned int prority, PCB * pcb)
 {
 
@@ -58,14 +138,14 @@ void InitialNewProcess(ProcessFunction_t function, const char * const name,
 
 	pcb->stackAddress.length = stackLength;
 
-	if (prority >= MAX_PROCESS_PRIORITY || prority < 0) {
-		printf("è¿›ç¨‹ä¼˜å…ˆçº§é”™è¯¯");
+	if (prority >= MAX_PROCESS_PRIORITY||prority<0) {
+		printf("½ø³ÌÓÅÏÈ¼¶´íÎó");
 		pcb->processPriority = 0;
 	}
 	else {
 		pcb->processPriority = prority;
 	}
-
+	
 	pcb->IDofPCB = pcb->stackPosition;
 
 
@@ -75,11 +155,124 @@ void InitialNewProcess(ProcessFunction_t function, const char * const name,
 
 void addProcessToReadyList(PCB_t * newPcb)
 {
+
+	int prority = newPcb->processPriority;
+	//µ±Ç°½ø³ÌÖ¸ÕëÊÇ·ñÎª¿Õ
+	if (CurrentPCB_pointer == NULL) {
+		CurrentPCB_pointer = newPcb;
+		//µ±Ç°½ø³ÌÊýÁ¿Îª0
+		if (CurrentProcessNumer == 0) {
+			int initResult = initStaticLists();
+			//³õÊ¼»¯¾²Ì¬È«¾ÖÁÐ±íÊ§°Ü
+			if (initResult == 0) {
+				printf("¾ÍÐ÷ÁÐ±í³õÊ¼»¯´íÎó\n");
+				return;
+			}
+			//³õÊ¼»¯³É¹¦
+			else {
+				ListItem* newListItem = myMalloc(sizeof(ListItem));
+
+				InitListItem(newListItem);
+
+				newListItem->PCB_block = newPcb;
+
+				newPcb->hostItem = newListItem;
+
+				SET_priorityValue(newListItem, newPcb->processPriority);
+
+				InsertItemIntoProcessList(newListItem,ProcessReadyList[prority]);
+
+				/*newListItem->PCB_block.status = READY;*/
+				
+
+				CurrentProcessNumer++;
+			}
+		}
+		//½ø³ÌÊýÁ¿²»ÎªÁã
+		else {
+
+		}
+	}
+	//½ø³ÌÖ¸Õë²»Îª¿Õ
+	else {
+		//µ÷¶ÈÆ÷Ã»ÓÐÖ´ÐÐ
+		if (schdulerStatus ==SCHEDULER_STOP) {
+			//ÐÂ½¨µÄ½ø³ÌÓÅÏÈ¼¶±Èµ±Ç°½ø³ÌÓÅÏÈ¼¶¸ß
+		    //ÇÐ»»ÐÂ½¨½ø³ÌÎªµ±Ç°½ø³Ì
+			if (newPcb->processPriority >= CurrentPCB_pointer->processPriority) {
+
+				CurrentPCB_pointer = newPcb;
+			}
+		}
+		else {
+			if (newPcb->processPriority >= CurrentPCB_pointer->processPriority) {
+				//´ò¶Ïµ÷¶ÈÆ÷£¬ÇÐ»»ÈÎÎñ½ø³Ì
+
+				//TODO
+				//TASKYIELDº¯ÊýÊµÏÖ
+			}
+		}
+
+		ListItem* newListItem = myMalloc(sizeof(ListItem));
+
+		InitListItem(newListItem);
+
+		newListItem->PCB_block = newPcb;
+
+		newPcb->hostItem = newListItem;
+
+		SET_priorityValue(newListItem, newPcb->processPriority);
+
+		InsertItemIntoProcessList(newListItem, ProcessReadyList[prority]);
+
+		CurrentProcessNumer++;
+
+	}
+}
+
+int DeleteProcess(PCB * pcb)
+{
+	PCB* pcbToDelete=pcb;
+	
+	ListItem* hostItemOfpcbToDelete = pcbToDelete->hostItem;
+	int preNumber = hostItemOfpcbToDelete->hostList->numberOfProcesses;
+	int result = 0;
+	//Èç¹ûÒªÉ¾³ýµÄ½ø³ÌÊÇµ±Ç°½ø³Ì
+	//½«µ±Ç°ÁÐ±íÖ¸ÕëÖ¸ÏòÁÐ±íÏîµÄÏÂÒ»¸ö
+	if (pcbToDelete == CurrentPCB_pointer) {
+		if (pcbToDelete->hostItem->hostList->numberOfProcesses == 1) {
+			CurrentPCB_pointer = NULL;
+		}
+		else {
+			CurrentPCB_pointer = pcbToDelete->hostItem->hostList->lastItem->next->PCB_block;
+		}
+		CurrentProcessNumer--;
+	}
+	else {
+		CurrentProcessNumer--;
+	}
+
+	if ( DeleteFromList(hostItemOfpcbToDelete)!=(preNumber-1)) {
+		//printf("½ø³ÌÉ¾³ýÊ§°Ü\n");
+		result = 0;
+	}
+	else {
+		if (0 == deletePcbFromStack(pcb->IDofPCB)) {
+			//printf("¶ÑÕ»Çå³ýÊ§°Ü\n");
+			return 0;
+		}
+		
+		
+		result = 1;
+		myFree(pcb);
+	}
+
+	return result;
 }
 
 void schedulerStopAll(void)
 {
-
+	
 }
 
 void schedulerResume(void)

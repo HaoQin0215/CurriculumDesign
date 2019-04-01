@@ -1,6 +1,6 @@
-ï»¿#include "list.h"
+#include "list.h"
 
-//åˆå§‹åŒ–é“¾è¡¨
+//³õÊ¼»¯Á´±í
 void InitProcessList(ProcessList * list)
 {
 	list->ListItemIndex = list->lastItem;
@@ -8,23 +8,23 @@ void InitProcessList(ProcessList * list)
 	list->numberOfProcesses = 0;
 
 	list->lastItem->previous = list->lastItem;
-
+	
 	list->lastItem->next = list->lastItem;
 
-	list->listType = NULL;
+	list->listType = LISTonINIT;
 
 	list->ListItemIndex = NULL;
 
 	list->lastItem->priorityValue = MAX_subordinateListItemValue;
 
 }
-//åˆå§‹åŒ–é“¾è¡¨é¡¹
+//³õÊ¼»¯Á´±íÏî
 void InitListItem(ListItem * item)
 {
 	item->hostList = NULL;
 }
 
-//æ’å…¥ä¸€ä¸ªé“¾è¡¨é¡¹åˆ°é“¾è¡¨
+//²åÈëÒ»¸öÁ´±íÏîµ½Á´±í
 void InsertItemIntoProcessList(ListItem * item, ProcessList * list)
 {
 	ListItem* itemIterator;
@@ -45,16 +45,17 @@ void InsertItemIntoProcessList(ListItem * item, ProcessList * list)
 	itemIterator->next = item;
 	item->hostList = list;
 
+	
 	list->numberOfProcesses += 1;
 }
 
-//æ’å…¥ä¸€ä¸ªé“¾è¡¨é¡¹åˆ°é“¾è¡¨æœ«å°¾
+//²åÈëÒ»¸öÁ´±íÏîµ½Á´±íÄ©Î²
 void InsertItemToListEnd(ListItem * item, ProcessList * list)
 {
-	if (list->numberOfProcesses == 0) {
+	if (list->numberOfProcesses==0) {
 
 		list->lastItem->next = item;
-
+		
 		list->lastItem->previous = item;
 		item->next = (ListItem*)&(list->lastItem);
 		item->previous = (ListItem*)&(list->lastItem);
@@ -71,18 +72,25 @@ void InsertItemToListEnd(ListItem * item, ProcessList * list)
 
 }
 
-//ç§»é™¤ä¸€ä¸ªé“¾è¡¨é¡¹
+//ÒÆ³ıÒ»¸öÁ´±íÏî
 int DeleteFromList(ListItem * item)
 {
 	ProcessList* hostList = item->hostList;
-
+    
 	item->next->previous = item->previous;
 	item->previous->next = item->next;
 	if (hostList->ListItemIndex == item) {
 		hostList->ListItemIndex = item->previous;
 	}
 	item->hostList = NULL;
-	hostList->numberOfProcesses -= 1;
+	hostList->numberOfProcesses --;
+
+	free(item);
 
 	return hostList->numberOfProcesses;
+}
+
+void SET_LIST_STATE(ProcessList * list,LIST_STATUS status)
+{
+	list->listType = status;
 }
