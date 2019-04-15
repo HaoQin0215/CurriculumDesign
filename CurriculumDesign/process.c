@@ -1,14 +1,24 @@
 #include "process.h"
 #include"stackSimulator.h"
+#include<stddef.h>
+//用于挂起调度器的变量
+static volatile long SchedulerSuspended = (long)FALSE;
 
 #define FindTopProrityProcess()\
 { \
 unsigned int topProrityProcess = TopPriorityReadyProcess;\
-	while(LIST_IS_EMPTY(&(ReadyList[topProrityProcess]))){	\
+	while(LIST_IS_EMPTY(&(ProcessReadyList[topProrityProcess]))){	\
 --topProrityProcess; \
 	}		 \
-	listChangeListItemWithTime(CurrentPCB_pointer, &ReadyList[topProrityProcess]); \
+	listChangeListItemWithTime(CurrentPCB_pointer, &ProcessReadyList[topProrityProcess]); \
 	TopPriorityReadyProcess = topProrityProcess;\
+}\
+
+#define proSELECT_HIGHEST_PRIORITY_PROCESS()\
+{\
+unsigned int uxTopPriority=TopPriorityReadyProcess;\
+FindTopProrityProcess();\
+listGET_OWNER_OF_NEXT_ENTRY( CurrentPCB_pointer, &( ProcessReadyList[ uxTopPriority ] ) );\
 }\
 
 int initStaticLists()
@@ -272,11 +282,15 @@ int DeleteProcess(PCB * pcb)
 
 void schedulerStopAll(void)
 {
+	++SchedulerSuspended;
 	
 }
 
 void schedulerResume(void)
 {
+	PCB_t*pcb;
+	long alreadyYielded = FALSE;
+	En
 }
 
 
@@ -299,4 +313,24 @@ void myFree(void*pointer) {
 		free(pointer);
 	}
 	(void)schedulerResume();
+}
+
+long increaseTicks()
+{
+	PCB_t pcb;
+	uint32_t itemValue;
+
+	return 0;
+}
+
+void processSwitchContext()
+{
+	if (schdulerStatus != SCHEDULER_STOP) {
+		xYieldPending = TRUE;
+	}
+	else {
+		xYieldPending = FALSE;
+		proSELECT_HIGHEST_PRIORITY_PROCESS();
+	}
+
 }

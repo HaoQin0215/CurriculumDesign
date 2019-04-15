@@ -31,7 +31,7 @@ typedef struct ListItem {
 
 typedef struct ProcessList {
 	volatile unsigned numberOfProcesses;
-	void* ListItemIndex;
+	ListItem* ListItemIndex;
 	ListItem* lastItem;
 	LIST_STATUS listType;
 	
@@ -64,11 +64,27 @@ typedef struct ProcessList {
 	}\
 	pcb = ConstList->ListItemIndex->PCB_block;\
 }\
+
+//获得链表下一个时间片的进程
+#define listGET_OWNER_OF_NEXT_ENTRY( pcb, pxList )										\
+{																							\
+ProcessList * const pxConstList = ( pxList );													\
+	/* Increment the index to the next item and return the item, ensuring */				\
+	/* we don't return the marker used at the end of the list.  */							\
+	( pxConstList )->ListItemIndex = ( pxConstList )->ListItemIndex->next;							\
+	if( ( void * ) ( pxConstList )->ListItemIndex == ( void * ) &( ( pxConstList )->lastItem ) )	\
+	{																						\
+		( pxConstList )->ListItemIndex = ( pxConstList )->ListItemIndex->next;						\
+	}																						\
+	( pcb ) = ( pxConstList )->ListItemIndex->PCB_block;											\
+}
+
 //检查列表是否被初始化
 #define listIS_INITIAL(list) (list->lastItem->priorityValue==MAX_subordinateListItemValue)
 
 //设置列表项值
 #define listSetListItemValue(listItem,value) ((listItem)->runTime=value)
+
 
 void InitProcessList(ProcessList* list);
 

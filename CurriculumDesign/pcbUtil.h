@@ -2,6 +2,14 @@
 #define MAX_NAME_LENGTH 20
 #define MAX_PROCESS_PRIORITY 30
 #include"list.h"
+
+#define FALSE ((long)0)
+#define TRUE ((long)1)
+
+#define listSELECT_HIGHEST_PRIORITY_TACK() {\
+	listGET_OWNER_OF_NEXT_ENTRY(CurrentPCB_pointer, &ProcessReadyList[TopPriorityReadyProcess]);\
+}\
+
 typedef enum {
 	SCHEDULER_RUNNING = 1,
 	SCHEDULER_STOP = 0
@@ -64,7 +72,9 @@ volatile unsigned int CurrentProcessNumer;
 //最高优先级的进程
 volatile unsigned int TopPriorityReadyProcess;
 //调度器的运状态
-SCHEDULER_STATUS schdulerStatus;
+volatile SCHEDULER_STATUS schdulerStatus;
+//是否能够进行任务切换
+volatile static long xYieldPending  = 0;
 
 
 

@@ -1,6 +1,6 @@
-
+#include<stdint.h>
 #include"pcbUtil.h"
-
+#include"ticks.h"
 #define GET_PCB_STATUS(pcb) (pcb->status)
 
 
@@ -28,3 +28,8 @@
 	void* myMalloc(size_t newSize);
 
 	void myFree(void*pointer);
+
+	long increaseTicks();
+
+	void processSwitchContext();
+
