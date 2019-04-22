@@ -3,15 +3,8 @@ d:\c++_code\curriculumdesign\curriculumdesign\pcbutil.h(6): warning C4005: “FA
   c:\program files (x86)\windows kits\10\include\10.0.17763.0\shared\minwindef.h(71): note: 参见“FALSE”的前一个定义
 d:\c++_code\curriculumdesign\curriculumdesign\pcbutil.h(7): warning C4005: “TRUE”: 宏重定义
   c:\program files (x86)\windows kits\10\include\10.0.17763.0\shared\minwindef.h(75): note: 参见“TRUE”的前一个定义
-d:\c++_code\curriculumdesign\curriculumdesign\entryblock.c(20): warning C4047: “=”:“void *”与“int”的间接级别不同
-d:\c++_code\curriculumdesign\curriculumdesign\entryblock.c(13): warning C4047: “初始化”:“int”与“void **”的间接级别不同
-  process.c
-d:\c++_code\curriculumdesign\curriculumdesign\process.c(147): warning C4047: “=”:“char *”与“const char”的间接级别不同
-d:\c++_code\curriculumdesign\curriculumdesign\process.c(150): warning C4047: “=”:“char *”与“const char”的间接级别不同
-d:\c++_code\curriculumdesign\curriculumdesign\process.c(333): warning C4047: “初始化”:“ProcessList *const ”与“ProcessList **”的间接级别不同
-d:\c++_code\curriculumdesign\curriculumdesign\process.c(342): warning C4311: “类型强制转换”: 从“void *”到“int”的指针截断
-d:\c++_code\curriculumdesign\curriculumdesign\process.c(340): warning C4047: “初始化”:“ProcessList *const ”与“ProcessList **”的间接级别不同
+d:\c++_code\curriculumdesign\curriculumdesign\entryblock.c(21): warning C4047: “=”:“void *”与“int”的间接级别不同
+d:\c++_code\curriculumdesign\curriculumdesign\entryblock.c(13): warning C4047: “初始化”:“int”与“void *”的间接级别不同
   ticks.c
   正在生成代码...
-x64\Debug\process.obj : warning LNK4042: 对象被多次指定；已忽略多余的指定
   CurriculumDesign.vcxproj -> D:\c++_code\CurriculumDesign\x64\Debug\CurriculumDesign.exe

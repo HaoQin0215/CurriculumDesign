@@ -55,15 +55,7 @@ typedef struct ProcessList {
 #define LIST_IS_EMPTY(list) ((list->numberOfProcesses==0)?1:0)
 
 
-//时间片到时切换列表项
-#define listChangeListItemWithTime(pcb,list) {\
-	ProcessList*const ConstList = (list);\
-	ConstList->ListItemIndex = ConstList->ListItemIndex->next;\
-	if ((void*)ConstList->ListItemIndex == (void*)ConstList->lastItem) {\
-		ConstList->ListItemIndex = ConstList->ListItemIndex->next;\
-	}\
-	pcb = ConstList->ListItemIndex->PCB_block;\
-}\
+
 
 //获得链表下一个时间片的进程
 #define listGET_OWNER_OF_NEXT_ENTRY( pcb, pxList )										\

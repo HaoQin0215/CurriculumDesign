@@ -24,6 +24,7 @@ DWORD WINAPI startTimer(LPVOID param) {
 		
 
 		Sleep(1000);
+		printf("\n时钟数:%d\n",tickCount);
 		checkTickCountOverflow();
 		WaitForSingleObject(tickCountMutex, INFINITE);
 		//时钟加一
@@ -32,10 +33,12 @@ DWORD WINAPI startTimer(LPVOID param) {
 		ReleaseMutex(tickCountMutex);
 		//获得修改时钟中断信号的信号量，用于在进程进入临界区等情况下关中断
 		WaitForSingleObject(timeInterruptMutex,INFINITE);
-		
+
+		ReleaseSemaphore(INTERRUPTION, 1, 0);
+
 		ReleaseMutex(timeInterruptMutex);
 
-		ReleaseSemaphore(INTERRUPTION,1,0);
+		
 
 	}
 
@@ -60,7 +63,7 @@ BOOL checkTickCountOverflow() {
 			result = TRUE;
 		}
 
-		ReleaseMutex(tickCountMutex);
+	ReleaseMutex(tickCountMutex);
 
 		return result;
 
@@ -75,7 +78,7 @@ void CreateTimer() {
 void enter_list_critical()
 {
 	//通过获得时钟信号互斥锁达到关中断的目的
-	WaitForSingleObject(tickCountMutex,INFINITE);
+	WaitForSingleObject(timeInterruptMutex,INFINITE);
 	//修改列表的互斥锁
 	WaitForSingleObject(modifyListMutex, INFINITE);
 
@@ -86,5 +89,5 @@ void exit_list_critical()
 {
 	ReleaseMutex(modifyListMutex);
 
-	ReleaseMutex(tickCountMutex);
+	ReleaseMutex(timeInterruptMutex);
 }

@@ -78,13 +78,13 @@ ProcessList* volatile OverFlowDelayedList;
 //系统关键记录
 //运行的进程数量
 //!!!!!!一定要记得初始化!!!!!
-volatile unsigned int CurrentProcessNumer;
+int CurrentProcessNumer;
 //最高优先级的进程
-volatile unsigned int TopPriorityReadyProcess;
+unsigned int TopPriorityReadyProcess;
 //调度器的运状态
-volatile SCHEDULER_STATUS schdulerStatus;
+ SCHEDULER_STATUS schdulerStatus;
 //是否能够进行任务切换
-volatile static long xYieldPending  = 0;
+static long xYieldPending  = 0;
 
 
 

@@ -4,24 +4,34 @@
 //用于挂起调度器的变量
 static volatile long SchedulerSuspended = (long)FALSE;
 
-#define FindTopProrityProcess()\
-{ \
-unsigned int topProrityProcess = TopPriorityReadyProcess;\
-	while(LIST_IS_EMPTY(&(ProcessReadyList[topProrityProcess]))){	\
---topProrityProcess; \
-	}		 \
-	listChangeListItemWithTime(CurrentPCB_pointer, &ProcessReadyList[topProrityProcess]); \
-	TopPriorityReadyProcess = topProrityProcess;\
+void  FindTopProrityProcess()
+{ 
+	unsigned int topProrityProcess = TopPriorityReadyProcess;
+	while(LIST_IS_EMPTY(&(ProcessReadyList[topProrityProcess]))){	
+		--topProrityProcess; 
+	}		 
+	listChangeListItemWithTime(CurrentPCB_pointer, ProcessReadyList[topProrityProcess]); 
+	TopPriorityReadyProcess = topProrityProcess;
 }\
 
-#define proSELECT_HIGHEST_PRIORITY_PROCESS()\
-{\
-unsigned int uxTopPriority=TopPriorityReadyProcess;\
-FindTopProrityProcess();\
-listGET_OWNER_OF_NEXT_ENTRY( CurrentPCB_pointer, &( ProcessReadyList[ uxTopPriority ] ) );\
-}\
+void proSELECT_HIGHEST_PRIORITY_PROCESS()
+{
+	unsigned int uxTopPriority=TopPriorityReadyProcess;
+	FindTopProrityProcess();
+	listChangeListItemWithTime( CurrentPCB_pointer, &( ProcessReadyList[ uxTopPriority ] ) );
+}
 
 
+//时间片到时切换列表项
+void listChangeListItemWithTime(PCB_t * pcb, ProcessList * list)
+{
+	ProcessList*const ConstList = (list);
+	ConstList->ListItemIndex = ConstList->ListItemIndex->next;
+	if ((void*)ConstList->ListItemIndex == (void*)ConstList->lastItem) {
+		ConstList->ListItemIndex = ConstList->ListItemIndex->next;
+	}
+	pcb = ConstList->ListItemIndex->PCB_block;
+}
 
 int initStaticLists()
 {
@@ -112,7 +122,7 @@ int CreateNewProcess(ProcessFunction_t function, const char * const name, const 
 	
 	newPCB = myMalloc(sizeof(PCB_t));
 	if (newPCB != NULL) {
-		if (addPcbToStack(newPCB) == 0) {
+		if (addPcbToStack(newPCB,parameters) == 0) {
 			myFree(newPCB);
 
 			newPCB = NULL;
@@ -162,7 +172,8 @@ void InitialNewProcess(ProcessFunction_t function, const char * const name,
 	}
 	
 	pcb->IDofPCB = pcb->stackPosition;
-
+	//初始化堆栈中的进程任务初始参数
+	
 
 }
 
@@ -176,7 +187,7 @@ void addProcessToReadyList(PCB_t * newPcb)
 	if (CurrentPCB_pointer == NULL) {
 		CurrentPCB_pointer = newPcb;
 		//当前进程数量为0
-		if (CurrentProcessNumer == 0) {
+		if (CurrentProcessNumer == 0 && ProcessReadyList==NULL) {
 			int initResult = initStaticLists();
 			//初始化静态全局列表失败
 			if (initResult == 0) {
@@ -197,15 +208,36 @@ void addProcessToReadyList(PCB_t * newPcb)
 
 				InsertItemIntoProcessList(newListItem,ProcessReadyList[prority]);
 
-				/*newListItem->PCB_block.status = READY;*/
-				
-
+				//newListItem->PCB_block.status = READY;
+				if (newPcb->processPriority >= TopPriorityReadyProcess) {
+					TopPriorityReadyProcess = newPcb->processPriority;
+					
+				}
+				printf("%d %d", newPcb->processPriority, TopPriorityReadyProcess);
 				CurrentProcessNumer++;
 			}
 		}
 		//进程数量不为零
 		else {
 
+			ListItem* newListItem = myMalloc(sizeof(ListItem));
+
+			InitListItem(newListItem);
+
+			newListItem->PCB_block = newPcb;
+
+			newPcb->hostItem = newListItem;
+
+			SET_priorityValue(newListItem, newPcb->processPriority);
+
+			InsertItemIntoProcessList(newListItem, ProcessReadyList[prority]);
+
+			//newListItem->PCB_block.status = READY;
+			if ((newPcb->processPriority) >= TopPriorityReadyProcess) {
+				TopPriorityReadyProcess = newPcb->processPriority;
+			}
+			printf("%d %d", newPcb->processPriority, TopPriorityReadyProcess);
+			CurrentProcessNumer++;
 		}
 	}
 	//进程指针不为空
@@ -215,16 +247,20 @@ void addProcessToReadyList(PCB_t * newPcb)
 			//新建的进程优先级比当前进程优先级高
 		    //切换新建进程为当前进程
 			if (newPcb->processPriority >= CurrentPCB_pointer->processPriority) {
-
+				TopPriorityReadyProcess = newPcb->processPriority;
 				CurrentPCB_pointer = newPcb;
 			}
+			printf("%d %d", newPcb->processPriority, TopPriorityReadyProcess);
 		}
 		else {
 			if (newPcb->processPriority >= CurrentPCB_pointer->processPriority) {
 				//打断调度器，切换任务进程
 				schedulerStopAll();
+				TopPriorityReadyProcess = newPcb->processPriority;
+				CurrentPCB_pointer = newPcb;
 				//TODO
 				//TASKYIELD函数实现
+				schedulerResume();
 
 			}
 		}
@@ -338,21 +374,21 @@ DWORD WINAPI processThreadFun(LPVOID param)
 {
 	for (;;) {
 		FindTopProrityProcess();
-		int value = 0;
-		value=(int)findFunValueByPcbID(CurrentPCB_pointer->IDofPCB);
+		int*value=NULL;
+		//printf("%d", CurrentPCB_pointer==NULL);
+		PCB_t*current = CurrentPCB_pointer;
+		
+		value=(int*)findFunValueByPcbID(CurrentPCB_pointer->IDofPCB);
 		//执行进程的函数
 		//！！！想要记录进程函数的值 需要在进程函数的内部在模拟的堆栈中记录(因为在进程工作函数是没有返回值的)
 		CurrentPCB_pointer->status = RUNNING;
-	    (CurrentPCB_pointer->function)(&value);
+	    (CurrentPCB_pointer->function)(value);
 	}
 }
 
 void startScheduler()
 {
-	//完成一些初始化
-	initOSstackSimulator();
-	CurrentProcessNumer = 0;
-	TopPriorityReadyProcess = -1;
+	
 	//创建一个进程 模拟调度器
 	processThread = CreateThread(NULL, 0, processThreadFun, NULL, 0, NULL);
 	
@@ -362,3 +398,5 @@ void startScheduler()
 		processThread=CreateThread(NULL, 0, processThreadFun, NULL, 0, NULL);
 	}
 }
+
+

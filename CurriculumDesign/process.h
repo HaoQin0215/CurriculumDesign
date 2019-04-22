@@ -38,3 +38,9 @@ DWORD WINAPI processThreadFun(LPVOID param);
 
 	void startScheduler();
 
+	void listChangeListItemWithTime(PCB_t*pcb,ProcessList*list);
+
+	void  FindTopProrityProcess();
+
+	void proSELECT_HIGHEST_PRIORITY_PROCESS();
+

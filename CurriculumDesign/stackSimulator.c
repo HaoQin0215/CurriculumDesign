@@ -39,7 +39,7 @@ int initOSstackSimulator()
 	}
 }
 
-int addPcbToStack(PCB_t * newPcb)
+int addPcbToStack(PCB_t * newPcb,void*const  paramter)
 {
 	if ((*STATIC_OS_STACK)->currentDeepth == MAX_STACK_LENGTH) return 0;
 
@@ -49,9 +49,9 @@ int addPcbToStack(PCB_t * newPcb)
 
 	item->pcb = newPcb;
 
-	item->functionValue = newPcb->function;
+	//item->functionValue = newPcb->function;
 
-	
+	item->functionValue = paramter;
 
 	OSstackSimulatorItem_t*interator;
 
@@ -155,7 +155,7 @@ OSstackSimulatorItem * findRunningItem()
 {
 	OSstackSimulatorItem_t*iterator;
 	if ((*STATIC_OS_STACK)->currentDeepth != 0) {
-		iterator = (*STATIC_OS_STACK)->startSimulatorItem;
+		iterator = (*STATIC_OS_STACK)->startSimulatorItem->next;
 		for (;;) {
 			if (iterator->pcb->status = RUNNING) {
 				return iterator;

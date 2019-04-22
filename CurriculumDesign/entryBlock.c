@@ -10,11 +10,12 @@
 void test(void*a) {
 	/*int* number = &(int*)a;
 	int number1 = &number;*/
-	int count = &a;
+	int count = a;
 	while (count++) {
-		Sleep(50);
-		printf("%d\n", count);
+		//Sleep(200);
+		
 		OSstackSimulatorItem_t*placeOfValue = findRunningItem();
+		printf("\n进程：%d,%d\n", placeOfValue->pcb->IDofPCB,count);
 		ENTER_CRITICAL();
 		{
 			placeOfValue->functionValue = count;
@@ -79,17 +80,24 @@ int main() {
 	//system("pause");
 
 
+	//完成一些初始化
+	initOSstackSimulator();
+	initStaticLists();
+
+	CurrentProcessNumer = 0;
+	TopPriorityReadyProcess = 0;
 
 	PCB_t **pcb=malloc(sizeof(PCB));
 	char name[MAX_NAME_LENGTH] = "P1";
 
-	CreateNewProcess(test, name, 1, (int*)1, 0, pcb);
+	CreateNewProcess(test, name, 13, (int*)1, 2, pcb);
 
 	PCB_t **pcb1=malloc(sizeof(PCB));
 	char name1[MAX_NAME_LENGTH] = "P2";
 
-	CreateNewProcess(test, name1, 1, (int*)2, 0, pcb1); 
-
+	CreateNewProcess(test, name1, 1, (int*)2, 6, pcb1); 
+	//printf("%d\n");
+	CreateTimer();
 	startScheduler();
 	system("pause");
 	return 0;
