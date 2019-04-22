@@ -4,17 +4,23 @@
 #include<Windows.h>
 #include"stackSimulator.h"
 #include"process.h"
-#include"pcbUtil.h"
 #include<mmsystem.h>
 
 
 void test(void*a) {
 	/*int* number = &(int*)a;
 	int number1 = &number;*/
-	int number1 = 0;
-	while (number1++<=3) {
+	int count = &a;
+	while (count++) {
 		Sleep(50);
-		printf("%s\n", (char*)a);
+		printf("%d\n", count);
+		OSstackSimulatorItem_t*placeOfValue = findRunningItem();
+		ENTER_CRITICAL();
+		{
+			placeOfValue->functionValue = count;
+		}
+		EXIT_CRITICAL();
+
 	}
 }
 int main() {
@@ -71,8 +77,20 @@ int main() {
 	//
 	//free(STATIC_OS_STACK);
 	//system("pause");
-	
 
-	
+
+
+	PCB_t **pcb=malloc(sizeof(PCB));
+	char name[MAX_NAME_LENGTH] = "P1";
+
+	CreateNewProcess(test, name, 1, (int*)1, 0, pcb);
+
+	PCB_t **pcb1=malloc(sizeof(PCB));
+	char name1[MAX_NAME_LENGTH] = "P2";
+
+	CreateNewProcess(test, name1, 1, (int*)2, 0, pcb1); 
+
+	startScheduler();
+	system("pause");
 	return 0;
 }

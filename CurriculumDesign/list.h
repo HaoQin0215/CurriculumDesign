@@ -79,6 +79,9 @@ ProcessList * const pxConstList = ( pxList );													\
 	( pcb ) = ( pxConstList )->ListItemIndex->PCB_block;											\
 }
 
+//获得链表 第一个进程
+#define listGET_OWNER_OF_HEAD_ENTRY(list) (list->lastItem->next->PCB_block)
+
 //检查列表是否被初始化
 #define listIS_INITIAL(list) (list->lastItem->priorityValue==MAX_subordinateListItemValue)
 

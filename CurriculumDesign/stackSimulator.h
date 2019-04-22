@@ -30,6 +30,10 @@ int deletePcbFromStack(int idOfPcb);
 
 PCB_t* findPCB_ById(int id);
 
+void*findFunValueByPcbID(int id);
+
+OSstackSimulatorItem*findRunningItem();
+
 
 
 

@@ -4,6 +4,9 @@
 #define GET_PCB_STATUS(pcb) (pcb->status)
 
 
+//进程工作函数
+DWORD WINAPI processThreadFun(LPVOID param);
+
 	int initStaticLists();
 
 	void freeStaticLists();
@@ -29,7 +32,9 @@
 
 	void myFree(void*pointer);
 
-	long increaseTicks();
+	
 
 	void processSwitchContext();
+
+	void startScheduler();
 

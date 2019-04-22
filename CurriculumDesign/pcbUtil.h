@@ -63,6 +63,16 @@ ProcessList* ProcessReadyList[MAX_PROCESS_PRIORITY];
 ProcessList* ProcessBlockingList;
 //全局删除列表
 ProcessList* ProcessDeleteList;
+//扩展就绪队列
+ProcessList* ProcessPendingList;
+//延时列表1
+ProcessList* DelayedList1;
+//延时列表2
+ProcessList* DelayedList2;
+//延时列表
+ProcessList* volatile DelayedList;
+//溢出延时列表，计数器溢出时交换两个延时列表进行重置
+ProcessList* volatile OverFlowDelayedList;
 
 
 //系统关键记录

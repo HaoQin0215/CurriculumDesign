@@ -131,4 +131,43 @@ PCB_t* findPCB_ById(int id)
 	return result;
 }
 
+void * findFunValueByPcbID(int id)
+{
+	OSstackSimulatorItem_t*iterator;
+	void*result = NULL;
+	if ((*STATIC_OS_STACK)->currentDeepth != 0) {
+		iterator = (*STATIC_OS_STACK)->startSimulatorItem;
+		for (;;) {
+			if (iterator->index = id) {
+				result = iterator->functionValue;
+			}
+
+			//printf("%d", iterator->index);
+			if (iterator->next == (*STATIC_OS_STACK)->startSimulatorItem) break;
+			iterator = iterator->next;
+
+		}
+	}
+	return result;
+}
+
+OSstackSimulatorItem * findRunningItem()
+{
+	OSstackSimulatorItem_t*iterator;
+	if ((*STATIC_OS_STACK)->currentDeepth != 0) {
+		iterator = (*STATIC_OS_STACK)->startSimulatorItem;
+		for (;;) {
+			if (iterator->pcb->status = RUNNING) {
+				return iterator;
+			}
+
+			//printf("%d", iterator->index);
+			if (iterator->next == (*STATIC_OS_STACK)->startSimulatorItem) break;
+			iterator = iterator->next;
+
+		}
+	}
+	return NULL;
+}
+
 

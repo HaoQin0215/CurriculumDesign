@@ -30,6 +30,9 @@
     <ClCompile Include="stackSimulator.c">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="ticks.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="list.h">

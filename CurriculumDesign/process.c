@@ -21,13 +21,18 @@ FindTopProrityProcess();\
 listGET_OWNER_OF_NEXT_ENTRY( CurrentPCB_pointer, &( ProcessReadyList[ uxTopPriority ] ) );\
 }\
 
+
+
 int initStaticLists()
 {
 
 	int result = 1;
 	ListItem* ProcessReadyListLastItem[MAX_PROCESS_PRIORITY];
+
 	ListItem* ProcessBlockingListLastItem= (ListItem*)malloc(sizeof(ListItem));
+
 	ListItem* ProcessDeleteListLastItem= (ListItem*)malloc(sizeof(ListItem));
+
 	for (int i = 0; i < MAX_PROCESS_PRIORITY; i++) {
 
 		ProcessReadyList[i] = (ProcessList*)malloc(sizeof(ProcessList));
@@ -100,7 +105,7 @@ void freeStaticLists()
 }
 
 int CreateNewProcess(ProcessFunction_t function, const char * const name, const unsigned int stackLength,
-					void * const parameters, unsigned int prority, PCB**pcb)
+					void * const parameters,	 unsigned int prority, PCB**pcb)
 {
 	PCB_t* newPCB;
 	int createResult;
@@ -217,9 +222,10 @@ void addProcessToReadyList(PCB_t * newPcb)
 		else {
 			if (newPcb->processPriority >= CurrentPCB_pointer->processPriority) {
 				//打断调度器，切换任务进程
-
+				schedulerStopAll();
 				//TODO
 				//TASKYIELD函数实现
+
 			}
 		}
 
@@ -282,15 +288,15 @@ int DeleteProcess(PCB * pcb)
 
 void schedulerStopAll(void)
 {
-	++SchedulerSuspended;
+	//等待中断信号量，相当于关中断
+	WaitForSingleObject(timeInterruptMutex, INFINITE);
+
 	
 }
 
 void schedulerResume(void)
 {
-	PCB_t*pcb;
-	long alreadyYielded = FALSE;
-	En
+	
 }
 
 
@@ -308,20 +314,14 @@ void * myMalloc(size_t newSize)
 }
 
 void myFree(void*pointer) {
-	if (NULL == pointer) {
+	if (NULL != pointer) {
 		schedulerStopAll();
 		free(pointer);
+		(void)schedulerResume();
 	}
-	(void)schedulerResume();
+	
 }
 
-long increaseTicks()
-{
-	PCB_t pcb;
-	uint32_t itemValue;
-
-	return 0;
-}
 
 void processSwitchContext()
 {
@@ -332,5 +332,33 @@ void processSwitchContext()
 		xYieldPending = FALSE;
 		proSELECT_HIGHEST_PRIORITY_PROCESS();
 	}
+}
+//进程处理函数(执行进程函数)
+DWORD WINAPI processThreadFun(LPVOID param)
+{
+	for (;;) {
+		FindTopProrityProcess();
+		int value = 0;
+		value=(int)findFunValueByPcbID(CurrentPCB_pointer->IDofPCB);
+		//执行进程的函数
+		//！！！想要记录进程函数的值 需要在进程函数的内部在模拟的堆栈中记录(因为在进程工作函数是没有返回值的)
+		CurrentPCB_pointer->status = RUNNING;
+	    (CurrentPCB_pointer->function)(&value);
+	}
+}
 
+void startScheduler()
+{
+	//完成一些初始化
+	initOSstackSimulator();
+	CurrentProcessNumer = 0;
+	TopPriorityReadyProcess = -1;
+	//创建一个进程 模拟调度器
+	processThread = CreateThread(NULL, 0, processThreadFun, NULL, 0, NULL);
+	
+	for (;;) {
+		WaitForSingleObject(INTERRUPTION,INFINITE);
+		TerminateThread(processThread,0);
+		processThread=CreateThread(NULL, 0, processThreadFun, NULL, 0, NULL);
+	}
 }
