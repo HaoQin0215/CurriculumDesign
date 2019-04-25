@@ -1,13 +1,19 @@
-#pragma once
+ï»¿#pragma once
 #include<stdio.h>
 #include<stdlib.h>
 #include<time.h>
 
-
+typedef enum {
+	LISTReady,
+	LISTBlocking,
+	LISTDelete,
+	LISTonINIT
+}LIST_STATUS;
 
 typedef struct ProcessList ProcessList;
 typedef struct ListItem ListItem;
 //typedef struct subordinateListItem subordinateListItem;
+
 typedef struct ListItem {
 	clock_t runTime;
 	ListItem* next;
@@ -26,26 +32,51 @@ typedef struct ListItem {
 
 typedef struct ProcessList {
 	volatile unsigned numberOfProcesses;
-	void* ListItemIndex;
+	ListItem* ListItemIndex;
 	ListItem* lastItem;
-	void * listType;
-	
+	LIST_STATUS listType;
+
 }ProcessList;
 
 #define setListPCB_Pointer(ListItem,PCBpointer) ((ListItem)->PCB_block=(void*)PCBpointer)
 
-//¶¨Òå×î¶à½ø³ÌÊý
+//å®šä¹‰æœ€å¤šè¿›ç¨‹æ•°
 #define MAX_PORCESS_NUMBER 20
 
-//¶¨Òå×îµÍÓÅÏÈ¼¶
+//å®šä¹‰æœ€ä½Žä¼˜å…ˆçº§
 #define MAX_subordinateListItemValue 30
 
-//»ñµÃµ±Ç°Á´±í½ø³ÌÊý
+//èŽ·å¾—å½“å‰é“¾è¡¨è¿›ç¨‹æ•°
 #define GET_LIST_NUMBER(List) ((List)->numberOfProcesses)
-//»ñµÃµ±Ç°ÁÐ±íÏîÓÅÏÈ¼¶
+//èŽ·å¾—å½“å‰åˆ—è¡¨é¡¹ä¼˜å…ˆçº§
 #define GET_priorityValue(Item) ((Item)->priorityValue)
-//ÉèÖÃµ±Ç°ÁÐ±íÏîÓÅÏÈ¼¶
+//è®¾ç½®å½“å‰åˆ—è¡¨é¡¹ä¼˜å…ˆçº§
 #define SET_priorityValue(Item,value) ((Item)->priorityValue=value)
+//åˆ¤æ–­å½“å‰åˆ—è¡¨æ˜¯å¦ä¸ºç©º
+#define LIST_IS_EMPTY(list) ((list->numberOfProcesses==0)?1:0)
+
+//èŽ·å¾—é“¾è¡¨ä¸‹ä¸€ä¸ªæ—¶é—´ç‰‡çš„è¿›ç¨‹
+#define listGET_OWNER_OF_NEXT_ENTRY( pcb, pxList )										\
+{																							\
+ProcessList * const pxConstList = ( pxList );													\
+	/* Increment the index to the next item and return the item, ensuring */				\
+	/* we don't return the marker used at the end of the list.  */							\
+	( pxConstList )->ListItemIndex = ( pxConstList )->ListItemIndex->next;							\
+	if( ( void * ) ( pxConstList )->ListItemIndex == ( void * ) &( ( pxConstList )->lastItem ) )	\
+	{																						\
+		( pxConstList )->ListItemIndex = ( pxConstList )->ListItemIndex->next;						\
+	}																						\
+	( pcb ) = ( pxConstList )->ListItemIndex->PCB_block;											\
+}
+
+//èŽ·å¾—é“¾è¡¨ ç¬¬ä¸€ä¸ªè¿›ç¨‹
+#define listGET_OWNER_OF_HEAD_ENTRY(list) (list->lastItem->next->PCB_block)
+
+//æ£€æŸ¥åˆ—è¡¨æ˜¯å¦è¢«åˆå§‹åŒ–
+#define listIS_INITIAL(list) (list->lastItem->priorityValue==MAX_subordinateListItemValue)
+
+//è®¾ç½®åˆ—è¡¨é¡¹å€¼
+#define listSetListItemValue(listItem,value) ((listItem)->runTime=value)
 
 
 void InitProcessList(ProcessList* list);
@@ -58,8 +89,4 @@ void InsertItemToListEnd(ListItem*item, ProcessList* list);
 
 int DeleteFromList(ListItem*item);
 
-
-
-
-
-
+void SET_LIST_STATE(ProcessList* list, LIST_STATUS status);

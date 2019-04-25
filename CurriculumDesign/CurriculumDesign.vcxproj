@@ -85,6 +85,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>D:\c++_code\CurriculumDesign\CurriculumDesign\list.c;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -117,11 +118,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="list.h" />
+    <ClInclude Include="pcbUtil.h" />
+    <ClInclude Include="stackSimulator.h" />
+    <ClInclude Include="ticks.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="entryBlock.c" />
     <ClCompile Include="list.c" />
-    <ClCompile Include="task.h" />
+    <ClCompile Include="process.c" />
+    <ClCompile Include="process.h" />
+    <ClCompile Include="stackSimulator.c" />
+    <ClCompile Include="ticks.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
