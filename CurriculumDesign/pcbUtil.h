@@ -51,12 +51,12 @@ typedef struct ProcessControllBlock {
 	//进程在堆栈中的位置
 	int stackPosition;
 }PCB;
-
+typedef PCB PCB_t;
 typedef struct EXIT_PROCESS {
-	void*pcb;
+	PCB_t*pcb;
 }EXIT_PROCESS;
 
-typedef PCB PCB_t;
+
 //正在处理的进程
 PCB_t* volatile CurrentPCB_pointer;
 

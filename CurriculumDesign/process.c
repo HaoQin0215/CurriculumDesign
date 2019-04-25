@@ -8,7 +8,7 @@ static volatile long SchedulerSuspended = (long)FALSE;
 void  FindTopProrityProcess()
 { 
 	unsigned int topProrityProcess = TopPriorityReadyProcess;
-	while(LIST_IS_EMPTY(&(ProcessReadyList[topProrityProcess]))){	
+	while(LIST_IS_EMPTY(ProcessReadyList[topProrityProcess])){	
 		--topProrityProcess; 
 	}		 
 	listChangeListItemWithTime(ProcessReadyList[topProrityProcess]); 
@@ -384,17 +384,20 @@ DWORD WINAPI processThreadFun(LPVOID param)
 	for (;;) {
 		
 		FindTopProrityProcess();
-		printf("现在执行的进程id：%s\n", CurrentPCB_pointer->PCBname);
+		printf("现在最高的优先级：%d\n",TopPriorityReadyProcess);
+		printf("现在执行的进程id：%d\n", CurrentPCB_pointer->IDofPCB);
 		int*value=NULL;
-		//printf("%d", CurrentPCB_pointer==NULL);
+		
 		//PCB_t*current = CurrentPCB_pointer;
 		
-		value=(int*)findFunValueByPcbID(CurrentPCB_pointer->IDofPCB);
+		value = (int*)findFunValueByPcbID(CurrentPCB_pointer->IDofPCB);
+		//printf("找到的值：%d\n",value);
 		//printf("进程：%d\n",CurrentPCB_pointer->IDofPCB);
 		//执行进程的函数
 		//！！！想要记录进程函数的值 需要在进程函数的内部在模拟的堆栈中记录(因为在进程工作函数是没有返回值的)
 		CurrentPCB_pointer->status = RUNNING;
 	    (CurrentPCB_pointer->function)(value);
+		
 	}
 }
 
@@ -408,25 +411,42 @@ void startScheduler()
 		WaitForSingleObject(INTERRUPTION,INFINITE);
 		//WaitForSingleObject(toKillProcessThread,INFINITE);
 
-	
-		
 		
 		if (exit_signal == 1) {
+			printf("要删除的进程：%s\n",(*processExitBuf)->pcb->PCBname);
 			DeleteProcess((*processExitBuf)->pcb);
+			//OSstackSimulatorItem*iter = (*STATIC_OS_STACK)->startSimulatorItem->next;
+			//ListItem*item = ProcessReadyList[6]->lastItem->next;
+			//for (int i = 0;; i++) {
+			//	if (iter == ProcessReadyList[6]->lastItem) {
+			//		break;
+			//	}
+			//	//printf("在列表中的进程名称:%s\n", ((PCB*)item->PCB_block)->PCBname);
+			//	printf("进程函数值是否为空:%s\n",iter->functionValue==NULL);
+			//	iter = iter->next;
+			//	
 			
-			FindTopProrityProcess();
+			//FindTopProrityProcess();
 	
 			exit_signal = 0;
 		}
 		TerminateThread(processThread, 0);
 		//ReleaseMutex(modifyListMutex);
 		//ReleaseMutex(timeInterruptMutex);
-		CurrentPCB_pointer->status = READY;
+		if (CurrentPCB_pointer != NULL) {
+			CurrentPCB_pointer->status = READY;
+		}
 		processThread=CreateThread(NULL, 0, processThreadFun, NULL, 0, NULL);
 
 	}
 }
 
+void runInFreeTime(void*a) {
+	while (1) {
+		Sleep(tickTime/2);
+		printf("系统当前空闲\n");
+	}
+}
 
 
 

@@ -27,6 +27,7 @@ int initOSstackSimulator()
 
 		newStack->startSimulatorItem->next = newStack->startSimulatorItem;
 
+
 		newStack->lastItem->next = newStack->lastItem;
 
 		newStack->startSimulatorItem->index = 0;
@@ -98,10 +99,10 @@ int deletePcbFromStack(int idOfPcb)
 		else {
 
 			for (;; iterator = iterator->next) {
-				if (iterator->next->index == idOfPcb) {
+				if (iterator->next->pcb->IDofPCB == idOfPcb) {
 					iterator->next = iterator->next->next;
-					free(iterator->next->pcb);
-					free(iterator->next);
+					//free(pcb);
+					//free(iterator->next);
 					(*STATIC_OS_STACK)->currentDeepth--;
 					break;
 				}

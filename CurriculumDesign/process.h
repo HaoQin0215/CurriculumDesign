@@ -46,3 +46,4 @@ DWORD WINAPI processThreadFun(LPVOID param);
 
 	//void changeProcessUnderInterruption(PCB_t*pcb);
 
+	void runInFreeTime(void*a);

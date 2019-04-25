@@ -8,17 +8,17 @@
 
 
 void test(void*a) {
-
+	srand(time(NULL));
 	/*int* number = &(int*)a;
 	int number1 = &number;*/
 	int count = a;
 	while (count++) {
 		clock_t start = clock();
-		Sleep(200);
+		Sleep(rand()%100+50);
 		//WaitForSingleObject(toKillProcessThread, INFINITE);
 		OSstackSimulatorItem_t*placeOfValue = findRunningItem();
 		//printf("%s\n",placeOfValue->pcb->PCBname);
-		printf("%d\n",count);
+		printf("进程的运行结果(将被写会内存):%d\n",count);
 		
 		ENTER_CRITICAL();
 		{
@@ -55,6 +55,18 @@ void test0(void*a) {
 		Sleep(200);
 		printf("process3 is running...\n");
 	}
+}
+void pr(int id) {
+	OSstackSimulatorItem*iter = (*STATIC_OS_STACK)->startSimulatorItem->next;
+	ListItem*item = ProcessReadyList[id]->lastItem->next;
+
+	for (int i = 0; i < 3; i++) {
+		if (item == ProcessReadyList[id]->lastItem) break;
+		/*int value = findFunValueByPcbID(iter->pcb->IDofPCB);*/
+		printf("1进程id:%s\n", iter->pcb->PCBname);
+		item = item->next;
+	}
+	printf("\n");
 }
 
 int main() {
@@ -124,32 +136,42 @@ int main() {
 	CurrentProcessNumer = 0;
 	TopPriorityReadyProcess = 0;
 
+
+	PCB_t **freeProcess = malloc(sizeof(PCB));
+	char name3[MAX_NAME_LENGTH] = "FreeProcess";
+
+	CreateNewProcess(runInFreeTime, name3, 1, NULL, 0, freeProcess, INFINITE * CLOCKS_PER_SEC);
+
 	PCB_t **pcb2 = malloc(sizeof(PCB));
 	char name2[MAX_NAME_LENGTH] = "P3";
 
-	CreateNewProcess(test1, name2, 1, (int*)12, 6, pcb2,2*CLOCKS_PER_SEC);
+	CreateNewProcess(test, name2, 1, (int*)12, 1, pcb2,4*CLOCKS_PER_SEC);
 
 	PCB_t **pcb1=malloc(sizeof(PCB));
 	char name1[MAX_NAME_LENGTH] = "P2";
 
-	CreateNewProcess(test0, name1, 11, (int*)19, 6, pcb1, 2 * CLOCKS_PER_SEC);
+	CreateNewProcess(test, name1, 11, (int*)19, 2, pcb1, 1* CLOCKS_PER_SEC);
 
 
 	PCB_t **pcb = malloc(sizeof(PCB));
 	char name[MAX_NAME_LENGTH] = "P1";
 
-	CreateNewProcess(test, name, 1, (int*)4, 6, pcb, 2 * CLOCKS_PER_SEC);
+	CreateNewProcess(test, name, 1, (int*)4, 3, pcb, 2 * CLOCKS_PER_SEC);
 
-	//OSstackSimulatorItem*iter = (*STATIC_OS_STACK)->startSimulatorItem->next;
-	/*ListItem*item = ProcessReadyList[6]->lastItem->next;
-	for (int i = 0; i < 3; i++) {
-		
-		printf("1进程id:%d\n",((PCB*)item->PCB_block)->IDofPCB);
-		item = item->next;
-	}*/
 	
+	//printf("%s\n",((PCB_t*)(ProcessReadyList[4]->lastItem->PCB_block))->PCBname);
 	CreateTimer();
 	startScheduler();
+	/*pr(1);
+	DeleteProcess(*pcb);
+	pr(1);
+
+	DeleteProcess(*pcb1);
+	pr(1);
+
+	DeleteProcess(*pcb2);
+	pr(1);
+*/
 	free(*processExitBuf);
 	system("pause");
 	return 0;
