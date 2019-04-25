@@ -24,7 +24,7 @@ OSstack **STATIC_OS_STACK;
 
 int initOSstackSimulator();
 
-int addPcbToStack(PCB_t* newPcb);
+int addPcbToStack(PCB_t* newPcb,void*param);
 
 int deletePcbFromStack(int idOfPcb);
 

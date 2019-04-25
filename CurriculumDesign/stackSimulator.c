@@ -49,6 +49,7 @@ int addPcbToStack(PCB_t * newPcb,void*const  paramter)
 
 	item->pcb = newPcb;
 
+	newPcb->status = READY;
 	//item->functionValue = newPcb->function;
 
 	item->functionValue = paramter;
@@ -64,7 +65,7 @@ int addPcbToStack(PCB_t * newPcb,void*const  paramter)
 	}
 	interator->next = item;
 	
-	item->index = interator->index + 1;
+	item->index = (interator->index) + 1;
 
 	newPcb->stackPosition = item->index;
 
@@ -116,7 +117,7 @@ PCB_t* findPCB_ById(int id)
 	OSstackSimulatorItem_t*iterator;
 	PCB_t*result =NULL;
 	if ((*STATIC_OS_STACK)->currentDeepth != 0) {
-		iterator = (*STATIC_OS_STACK)->startSimulatorItem;
+		iterator = (*STATIC_OS_STACK)->startSimulatorItem->next;
 		for (;;) {
 			if (iterator->index = id) {
 				result = iterator->pcb;
@@ -136,10 +137,13 @@ void * findFunValueByPcbID(int id)
 	OSstackSimulatorItem_t*iterator;
 	void*result = NULL;
 	if ((*STATIC_OS_STACK)->currentDeepth != 0) {
-		iterator = (*STATIC_OS_STACK)->startSimulatorItem;
+		iterator = (*STATIC_OS_STACK)->startSimulatorItem->next;
 		for (;;) {
-			if (iterator->index = id) {
+			//printf("迭代：%d\t%d\n",iterator->pcb->IDofPCB,id);
+			if (iterator->pcb->IDofPCB == id) {
 				result = iterator->functionValue;
+				//printf("下标：%d\t查询结果：%d\n", iterator->index, result);
+				break;
 			}
 
 			//printf("%d", iterator->index);
@@ -148,6 +152,7 @@ void * findFunValueByPcbID(int id)
 
 		}
 	}
+	
 	return result;
 }
 
@@ -157,7 +162,7 @@ OSstackSimulatorItem * findRunningItem()
 	if ((*STATIC_OS_STACK)->currentDeepth != 0) {
 		iterator = (*STATIC_OS_STACK)->startSimulatorItem->next;
 		for (;;) {
-			if (iterator->pcb->status = RUNNING) {
+			if (iterator->pcb->status == RUNNING) {
 				return iterator;
 			}
 

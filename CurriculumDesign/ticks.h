@@ -18,6 +18,9 @@ HANDLE tickCountMutex;
 //中断信号量
 HANDLE INTERRUPTION;
 
+//杀死线程的信号量
+HANDLE toKillProcessThread;
+
 //调度器阻塞信号量
 HANDLE schedulerMutex;
 //初始化信号量
@@ -28,6 +31,8 @@ void initSemphores();
 HANDLE processThread;
 //时钟工作线程
 HANDLE timerThread;
+
+#define tickTime 500
 
 #define ENTER_CRITICAL() enter_list_critical() 
 

@@ -10,20 +10,29 @@ void initSemphores()
 	tickCountMutex = CreateMutex(NULL, TRUE, NULL);
 
 	INTERRUPTION = CreateSemaphore(NULL,0,1,NULL);
+	//INTERRUPTION = CreateMutex(NULL, TRUE, NULL);
 
 	schedulerMutex= CreateMutex(NULL, TRUE, NULL);
+
+	//toKillProcessThread = CreateSemaphore(NULL, 0, 1, NULL);
+    
+	ReleaseMutex(timeInterruptMutex);
+	ReleaseMutex(modifyListMutex);
+	ReleaseMutex(tickCountMutex);
+	ReleaseMutex(schedulerMutex);
+	//ReleaseMutex(toKillProcessThread);
 }
 
 
 DWORD WINAPI startTimer(LPVOID param) {
 	tickCount = 0;
 
-	initSemphores();
+	
 
 	while (1) {
 		
-
-		Sleep(1000);
+		Sleep(tickTime);
+		//Sleep(50);
 		printf("\n时钟数:%d\n",tickCount);
 		checkTickCountOverflow();
 		WaitForSingleObject(tickCountMutex, INFINITE);
@@ -34,9 +43,11 @@ DWORD WINAPI startTimer(LPVOID param) {
 		//获得修改时钟中断信号的信号量，用于在进程进入临界区等情况下关中断
 		WaitForSingleObject(timeInterruptMutex,INFINITE);
 
-		ReleaseSemaphore(INTERRUPTION, 1, 0);
+		ReleaseSemaphore(INTERRUPTION,1,NULL);
 
 		ReleaseMutex(timeInterruptMutex);
+
+		
 
 		
 
@@ -87,7 +98,7 @@ void enter_list_critical()
 
 void exit_list_critical()
 {
-	ReleaseMutex(modifyListMutex);
 
+    ReleaseMutex(modifyListMutex);
 	ReleaseMutex(timeInterruptMutex);
 }

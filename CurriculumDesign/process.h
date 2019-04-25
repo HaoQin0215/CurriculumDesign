@@ -14,10 +14,10 @@ DWORD WINAPI processThreadFun(LPVOID param);
 	int CreateNewProcess(ProcessFunction_t function,
 		const char* const name, const unsigned int stackLength,
 		void* const parameters, unsigned int prority,
-		PCB** pcb);
+		PCB** pcb,time_t runTime);
 
 	void InitialNewProcess(ProcessFunction_t function, const char* const name, const unsigned int stackLength,
-		void* const parameters, unsigned int prority, PCB*pcb);
+		void* const parameters, unsigned int prority, PCB*pcb,time_t runTime);
 
 	void addProcessToReadyList(PCB_t*newPcb);
 
@@ -38,9 +38,11 @@ DWORD WINAPI processThreadFun(LPVOID param);
 
 	void startScheduler();
 
-	void listChangeListItemWithTime(PCB_t*pcb,ProcessList*list);
+	void listChangeListItemWithTime(ProcessList*list);
 
 	void  FindTopProrityProcess();
 
 	void proSELECT_HIGHEST_PRIORITY_PROCESS();
+
+	//void changeProcessUnderInterruption(PCB_t*pcb);
 

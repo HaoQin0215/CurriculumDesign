@@ -52,6 +52,9 @@ typedef struct ProcessControllBlock {
 	int stackPosition;
 }PCB;
 
+typedef struct EXIT_PROCESS {
+	void*pcb;
+}EXIT_PROCESS;
 
 typedef PCB PCB_t;
 //正在处理的进程
@@ -85,6 +88,9 @@ unsigned int TopPriorityReadyProcess;
  SCHEDULER_STATUS schdulerStatus;
 //是否能够进行任务切换
 static long xYieldPending  = 0;
+//进程退出的信号
+int exit_signal ;
 
+EXIT_PROCESS **processExitBuf;
 
 
