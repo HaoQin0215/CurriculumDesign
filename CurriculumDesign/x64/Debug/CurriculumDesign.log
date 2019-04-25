@@ -1,10 +1,27 @@
 ﻿  entryBlock.c
+d:\codefile\vs-workspace\curriculumdesign\curriculumdesign\pcbutil.h(8): warning C4005: “FALSE”: 宏重定义
+  c:\windows kits\10\include\10.0.17763.0\shared\minwindef.h(71): note: 参见“FALSE”的前一个定义
+d:\codefile\vs-workspace\curriculumdesign\curriculumdesign\pcbutil.h(9): warning C4005: “TRUE”: 宏重定义
+  c:\windows kits\10\include\10.0.17763.0\shared\minwindef.h(75): note: 参见“TRUE”的前一个定义
+d:\codefile\vs-workspace\curriculumdesign\curriculumdesign\entryblock.c(11): warning C4244: “函数”: 从“time_t”转换到“unsigned int”，可能丢失数据
+d:\codefile\vs-workspace\curriculumdesign\curriculumdesign\entryblock.c(25): warning C4312: “类型强制转换”: 从“int”转换到更大的“int *”
+d:\codefile\vs-workspace\curriculumdesign\curriculumdesign\entryblock.c(14): warning C4047: “初始化”:“int”与“void *”的间接级别不同
+d:\codefile\vs-workspace\curriculumdesign\curriculumdesign\entryblock.c(66): warning C4477: “printf”: 格式字符串“%s”需要类型“char *”的参数，但可变参数 1 拥有了类型“char **”
+d:\codefile\vs-workspace\curriculumdesign\curriculumdesign\entryblock.c(143): warning C4307: “*”: 整型常量溢出
   list.c
-  pcbUtil.c
   process.c
-d:\codefile\vs-workspace\curriculumdesign\curriculumdesign\process.c(132): warning C4047: “=”:“char *”与“const char”的间接级别不同
-d:\codefile\vs-workspace\curriculumdesign\curriculumdesign\process.c(135): warning C4047: “=”:“char *”与“const char”的间接级别不同
+d:\codefile\vs-workspace\curriculumdesign\curriculumdesign\process.c(167): warning C4047: “函数”:“char *”与“char *[20]”的间接级别不同
+d:\codefile\vs-workspace\curriculumdesign\curriculumdesign\process.c(167): warning C4024: “strcpy_s”: 形参和实参 1 的类型不同
+d:\codefile\vs-workspace\curriculumdesign\curriculumdesign\process.c(182): warning C4244: “=”: 从“time_t”转换到“clock_t”，可能丢失数据
+d:\codefile\vs-workspace\curriculumdesign\curriculumdesign\process.c(414): warning C4477: “printf”: 格式字符串“%s”需要类型“char *”的参数，但可变参数 1 拥有了类型“char **”
   stackSimulator.c
-d:\codefile\vs-workspace\curriculumdesign\curriculumdesign\stacksimulator.c(71): warning C4047: “=”:“void *volatile ”与“int”的间接级别不同
+d:\codefile\vs-workspace\curriculumdesign\curriculumdesign\stacksimulator.c(73): warning C4047: “=”:“void *volatile ”与“int”的间接级别不同
+  ticks.c
   正在生成代码...
-  CurriculumDesign.vcxproj -> D:\codefile\vs-workspace\CurriculumDesign\x64\Debug\CurriculumDesign.exe
+  process.h
+x64\Debug\process.obj : warning LNK4042: 对象被多次指定；已忽略多余的指定
+entryBlock.obj : error LNK2019: 无法解析的外部符号 initStaticLists，该符号在函数 main 中被引用
+entryBlock.obj : error LNK2019: 无法解析的外部符号 CreateNewProcess，该符号在函数 main 中被引用
+entryBlock.obj : error LNK2019: 无法解析的外部符号 startScheduler，该符号在函数 main 中被引用
+entryBlock.obj : error LNK2019: 无法解析的外部符号 runInFreeTime，该符号在函数 main 中被引用
+D:\codefile\vs-workspace\CurriculumDesign\x64\Debug\CurriculumDesign.exe : fatal error LNK1120: 4 个无法解析的外部命令

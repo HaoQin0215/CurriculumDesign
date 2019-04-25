@@ -13,6 +13,7 @@ typedef enum {
 typedef struct ProcessList ProcessList;
 typedef struct ListItem ListItem;
 //typedef struct subordinateListItem subordinateListItem;
+
 typedef struct ListItem {
 	clock_t runTime;
 	ListItem* next;
@@ -31,7 +32,7 @@ typedef struct ListItem {
 
 typedef struct ProcessList {
 	volatile unsigned numberOfProcesses;
-	void* ListItemIndex;
+	ListItem* ListItemIndex;
 	ListItem* lastItem;
 	LIST_STATUS listType;
 
@@ -54,21 +55,29 @@ typedef struct ProcessList {
 //判断当前列表是否为空
 #define LIST_IS_EMPTY(list) ((list->numberOfProcesses==0)?1:0)
 
+//获得链表下一个时间片的进程
+#define listGET_OWNER_OF_NEXT_ENTRY( pcb, pxList )										\
+{																							\
+ProcessList * const pxConstList = ( pxList );													\
+	/* Increment the index to the next item and return the item, ensuring */				\
+	/* we don't return the marker used at the end of the list.  */							\
+	( pxConstList )->ListItemIndex = ( pxConstList )->ListItemIndex->next;							\
+	if( ( void * ) ( pxConstList )->ListItemIndex == ( void * ) &( ( pxConstList )->lastItem ) )	\
+	{																						\
+		( pxConstList )->ListItemIndex = ( pxConstList )->ListItemIndex->next;						\
+	}																						\
+	( pcb ) = ( pxConstList )->ListItemIndex->PCB_block;											\
+}
 
-//时间片到时切换列表项
-#define listChangeListItemWithTime(pcb,list) {\
-	ProcessList*const ConstList = (list);\
-	ConstList->ListItemIndex = ConstList->ListItemIndex->next;\
-	if ((void*)ConstList->ListItemIndex == (void*)ConstList->lastItem) {\
-		ConstList->ListItemIndex = ConstList->ListItemIndex->next;\
-	}\
-	pcb = ConstList->ListItemIndex->PCB_block;\
-}\
+//获得链表 第一个进程
+#define listGET_OWNER_OF_HEAD_ENTRY(list) (list->lastItem->next->PCB_block)
+
 //检查列表是否被初始化
 #define listIS_INITIAL(list) (list->lastItem->priorityValue==MAX_subordinateListItemValue)
 
 //设置列表项值
 #define listSetListItemValue(listItem,value) ((listItem)->runTime=value)
+
 
 void InitProcessList(ProcessList* list);
 

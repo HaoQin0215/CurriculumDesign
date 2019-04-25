@@ -13,7 +13,7 @@ void InitProcessList(ProcessList * list)
 
 	list->listType = LISTonINIT;
 
-	list->ListItemIndex = NULL;
+	list->ListItemIndex = list->lastItem;
 
 	list->lastItem->priorityValue = MAX_subordinateListItemValue;
 
@@ -45,7 +45,6 @@ void InsertItemIntoProcessList(ListItem * item, ProcessList * list)
 	itemIterator->next = item;
 	item->hostList = list;
 
-
 	list->numberOfProcesses += 1;
 }
 
@@ -69,7 +68,6 @@ void InsertItemToListEnd(ListItem * item, ProcessList * list)
 		list->lastItem->previous = item;
 	}
 	list->numberOfProcesses += 1;
-
 }
 
 //移除一个链表项

@@ -10,10 +10,8 @@ int initOSstackSimulator()
 
 	//OSstack* mystack = STATIC_OS_STACK;
 
-	if (newStack == NULL || newItem == NULL || newItem2 == NULL)
-	{
-		return 0;
-	}
+	if (newStack == NULL || newItem == NULL || newItem2 == NULL) return 0;
+
 	else {
 		newStack->currentDeepth = 0;
 
@@ -29,6 +27,7 @@ int initOSstackSimulator()
 
 		newStack->startSimulatorItem->next = newStack->startSimulatorItem;
 
+
 		newStack->lastItem->next = newStack->lastItem;
 
 		newStack->startSimulatorItem->index = 0;
@@ -41,7 +40,7 @@ int initOSstackSimulator()
 	}
 }
 
-int addPcbToStack(PCB_t * newPcb)
+int addPcbToStack(PCB_t * newPcb, void*const  paramter)
 {
 	if ((*STATIC_OS_STACK)->currentDeepth == MAX_STACK_LENGTH) return 0;
 
@@ -51,7 +50,10 @@ int addPcbToStack(PCB_t * newPcb)
 
 	item->pcb = newPcb;
 
-	item->functionValue = newPcb->function;
+	newPcb->status = READY;
+	//item->functionValue = newPcb->function;
+
+	item->functionValue = paramter;
 
 	OSstackSimulatorItem_t*interator;
 
@@ -64,7 +66,7 @@ int addPcbToStack(PCB_t * newPcb)
 	}
 	interator->next = item;
 
-	item->index = interator->index + 1;
+	item->index = (interator->index) + 1;
 
 	newPcb->stackPosition = item->index;
 
@@ -97,10 +99,10 @@ int deletePcbFromStack(int idOfPcb)
 		else {
 
 			for (;; iterator = iterator->next) {
-				if (iterator->next->index == idOfPcb) {
+				if (iterator->next->pcb->IDofPCB == idOfPcb) {
 					iterator->next = iterator->next->next;
-					free(iterator->next->pcb);
-					free(iterator->next);
+					//free(pcb);
+					//free(iterator->next);
 					(*STATIC_OS_STACK)->currentDeepth--;
 					break;
 				}
@@ -116,15 +118,60 @@ PCB_t* findPCB_ById(int id)
 	OSstackSimulatorItem_t*iterator;
 	PCB_t*result = NULL;
 	if ((*STATIC_OS_STACK)->currentDeepth != 0) {
-		iterator = (*STATIC_OS_STACK)->startSimulatorItem;
+		iterator = (*STATIC_OS_STACK)->startSimulatorItem->next;
 		for (;;) {
 			if (iterator->index = id) {
 				result = iterator->pcb;
 			}
+
+			//printf("%d", iterator->index);
+			if (iterator->next == (*STATIC_OS_STACK)->startSimulatorItem) break;
+			iterator = iterator->next;
+
+		}
+	}
+	return result;
+}
+
+
+void * findFunValueByPcbID(int id)
+{
+	OSstackSimulatorItem_t*iterator;
+	void*result = NULL;
+	if ((*STATIC_OS_STACK)->currentDeepth != 0) {
+		iterator = (*STATIC_OS_STACK)->startSimulatorItem->next;
+		for (;;) {
+			//printf("迭代：%d\t%d\n",iterator->pcb->IDofPCB,id);
+			if (iterator->pcb->IDofPCB == id) {
+				result = iterator->functionValue;
+				//printf("下标：%d\t查询结果：%d\n", iterator->index, result);
+				break;
+			}
+
 			//printf("%d", iterator->index);
 			if (iterator->next == (*STATIC_OS_STACK)->startSimulatorItem) break;
 			iterator = iterator->next;
 		}
 	}
+
 	return result;
+}
+
+OSstackSimulatorItem * findRunningItem()
+{
+	OSstackSimulatorItem_t*iterator;
+	if ((*STATIC_OS_STACK)->currentDeepth != 0) {
+		iterator = (*STATIC_OS_STACK)->startSimulatorItem->next;
+		for (;;) {
+			if (iterator->pcb->status == RUNNING) {
+				return iterator;
+			}
+
+			//printf("%d", iterator->index);
+			if (iterator->next == (*STATIC_OS_STACK)->startSimulatorItem) break;
+			iterator = iterator->next;
+
+		}
+	}
+	return NULL;
 }
