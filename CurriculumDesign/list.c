@@ -30,7 +30,7 @@ void InsertItemIntoProcessList(ListItem * item, ProcessList * list)
 	ListItem* itemIterator;
 
 	volatile unsigned newPriorityValue = item->priorityValue;
-
+	printf("%d\n",newPriorityValue);
 	if (newPriorityValue == MAX_subordinateListItemValue) {
 		itemIterator = list->lastItem->previous;
 	}
@@ -76,16 +76,16 @@ void InsertItemToListEnd(ListItem * item, ProcessList * list)
 int DeleteFromList(ListItem * item)
 {
 	ProcessList* hostList = item->hostList;
-    
+	//printf("%d",hostList->numberOfProcesses);
 	item->next->previous = item->previous;
 	item->previous->next = item->next;
 	if (hostList->ListItemIndex == item) {
 		hostList->ListItemIndex = item->previous;
 	}
 	item->hostList = NULL;
-	hostList->numberOfProcesses --;
+	(hostList->numberOfProcesses) --;
 
-	free(item);
+	//free(item);
 
 	return hostList->numberOfProcesses;
 }

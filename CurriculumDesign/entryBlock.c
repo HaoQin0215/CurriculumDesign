@@ -134,7 +134,7 @@ int main() {
 
 	(*processExitBuf) = (EXIT_PROCESS*)malloc(sizeof(EXIT_PROCESS));
 	CurrentProcessNumer = 0;
-	TopPriorityReadyProcess = 0;
+	TopPriorityReadyProcess = 30;
 
 
 	PCB_t **freeProcess = malloc(sizeof(PCB));
@@ -158,7 +158,11 @@ int main() {
 
 	CreateNewProcess(test, name, 1, (int*)4, 3, pcb, 2 * CLOCKS_PER_SEC);
 
-	
+
+	BlockedProcess((*pcb)->IDofPCB);
+	printf("优先级就绪队列3是否为空：%d\n",LIST_IS_EMPTY(ProcessReadyList[3]));
+	WakeupProcess((*pcb)->IDofPCB);
+	printf("优先级就绪队列3是否为空：%d\n", LIST_IS_EMPTY(ProcessReadyList[3]));
 	//printf("%s\n",((PCB_t*)(ProcessReadyList[4]->lastItem->PCB_block))->PCBname);
 	CreateTimer();
 	startScheduler();
@@ -172,7 +176,9 @@ int main() {
 	DeleteProcess(*pcb2);
 	pr(1);
 */
+
 	free(*processExitBuf);
+	freeStaticLists();
 	system("pause");
 	return 0;
 }

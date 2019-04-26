@@ -22,8 +22,9 @@ DWORD WINAPI processThreadFun(LPVOID param);
 	void addProcessToReadyList(PCB_t*newPcb);
 
 	int DeleteProcess(PCB* pcb);
-	int BlockedProcess();
-	int WakeupProcess();
+
+	int BlockedProcess(int pcbID);
+	int WakeupProcess(int pcbID);
 
 	void schedulerStopAll(void);
 	void schedulerResume(void);
@@ -47,3 +48,5 @@ DWORD WINAPI processThreadFun(LPVOID param);
 	//void changeProcessUnderInterruption(PCB_t*pcb);
 
 	void runInFreeTime(void*a);
+
+	

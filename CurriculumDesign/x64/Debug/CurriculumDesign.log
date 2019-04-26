@@ -1,11 +1,6 @@
-﻿  entryBlock.c
-d:\c++_code\curriculumdesign\curriculumdesign\pcbutil.h(6): warning C4005: “FALSE”: 宏重定义
-  c:\program files (x86)\windows kits\10\include\10.0.17763.0\shared\minwindef.h(71): note: 参见“FALSE”的前一个定义
-d:\c++_code\curriculumdesign\curriculumdesign\pcbutil.h(7): warning C4005: “TRUE”: 宏重定义
-  c:\program files (x86)\windows kits\10\include\10.0.17763.0\shared\minwindef.h(75): note: 参见“TRUE”的前一个定义
-d:\c++_code\curriculumdesign\curriculumdesign\entryblock.c(11): warning C4244: “函数”: 从“time_t”转换到“unsigned int”，可能丢失数据
-d:\c++_code\curriculumdesign\curriculumdesign\entryblock.c(25): warning C4312: “类型强制转换”: 从“int”转换到更大的“int *”
-d:\c++_code\curriculumdesign\curriculumdesign\entryblock.c(14): warning C4047: “初始化”:“int”与“void *”的间接级别不同
-d:\c++_code\curriculumdesign\curriculumdesign\entryblock.c(66): warning C4477: “printf”: 格式字符串“%s”需要类型“char *”的参数，但可变参数 1 拥有了类型“char **”
-d:\c++_code\curriculumdesign\curriculumdesign\entryblock.c(143): warning C4307: “*”: 整型常量溢出
+﻿  process.c
+d:\c++_code\curriculumdesign\curriculumdesign\process.c(169): warning C4047: “函数”:“char *”与“char *[20]”的间接级别不同
+d:\c++_code\curriculumdesign\curriculumdesign\process.c(169): warning C4024: “strcpy_s”: 形参和实参 1 的类型不同
+d:\c++_code\curriculumdesign\curriculumdesign\process.c(184): warning C4244: “=”: 从“time_t”转换到“clock_t”，可能丢失数据
+d:\c++_code\curriculumdesign\curriculumdesign\process.c(457): warning C4477: “printf”: 格式字符串“%s”需要类型“char *”的参数，但可变参数 1 拥有了类型“char **”
   CurriculumDesign.vcxproj -> D:\c++_code\CurriculumDesign\x64\Debug\CurriculumDesign.exe

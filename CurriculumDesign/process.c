@@ -266,8 +266,7 @@ void addProcessToReadyList(PCB_t * newPcb)
 				schedulerStopAll();
 				TopPriorityReadyProcess = newPcb->processPriority;
 				CurrentPCB_pointer = newPcb;
-				//TODO
-				//TASKYIELD函数实现
+			
 				schedulerResume();
 
 			}
@@ -330,17 +329,59 @@ int DeleteProcess(PCB * pcb)
 	return result;
 }
 
+int BlockedProcess(int pcbID)
+{
+	//找到要阻塞的PCB
+	PCB_t*pcbToBlock = findPCB_ById(pcbID);
+	//对应的优先级
+	int prority = pcbToBlock->processPriority;
+	
+	if (0 == ProcessReadyList[prority]->numberOfProcesses) {
+		printf("进程已经退出！\n");
+		return 0;
+	}
+
+	//ListItem* ItemOfRemoveToBlockList = pcbToBlock->hostItem;
+	//printf("控制块优先级：%d,列表项优先级:%d",pcbToBlock->processPriority,ItemOfRemoveToBlockList->priorityValue);
+	/*printf("进程数量：%d",ItemOfRemoveToBlockList->hostList->numberOfProcesses);*/
+	//ENTER_CRITICAL();
+	{
+		DeleteFromList(pcbToBlock->hostItem);
+		InsertItemIntoProcessList(pcbToBlock->hostItem,ProcessBlockingList);
+		pcbToBlock->status = BLOCKING;
+	}
+	//EXIT_CRITICAL();
+	return 1;
+}
+
+int WakeupProcess(int pcbID)
+{
+	//找到要唤醒的PCB
+	PCB_t*pcbToReady = findPCB_ById(pcbID);
+	int prority = pcbToReady->processPriority;
+	//找到相应的列表项
+	//ListItem* ItemOfRemoveToReadList = pcbToReady->hostItem;
+	//ENTER_CRITICAL();
+	{
+		DeleteFromList(pcbToReady->hostItem);
+		InsertItemIntoProcessList(pcbToReady->hostItem, ProcessReadyList[prority]);
+		pcbToReady->status = READY;
+	}
+	//EXIT_CRITICAL();
+	return 1;
+}
+
 void schedulerStopAll(void)
 {
 	//等待中断信号量，相当于关中断
 	//WaitForSingleObject(timeInterruptMutex, INFINITE);
-
+	WaitForSingleObject(modifyListMutex,INFINITE);
 	
 }
 
 void schedulerResume(void)
 {
-	
+	ReleaseMutex(modifyListMutex);
 }
 
 
@@ -415,6 +456,7 @@ void startScheduler()
 		if (exit_signal == 1) {
 			printf("要删除的进程：%s\n",(*processExitBuf)->pcb->PCBname);
 			DeleteProcess((*processExitBuf)->pcb);
+			
 			//OSstackSimulatorItem*iter = (*STATIC_OS_STACK)->startSimulatorItem->next;
 			//ListItem*item = ProcessReadyList[6]->lastItem->next;
 			//for (int i = 0;; i++) {
