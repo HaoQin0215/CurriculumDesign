@@ -425,8 +425,8 @@ DWORD WINAPI processThreadFun(LPVOID param)
 	for (;;) {
 		
 		FindTopProrityProcess();
-		printf("现在最高的优先级：%d\n",TopPriorityReadyProcess);
-		printf("现在执行的进程id：%d\n", CurrentPCB_pointer->IDofPCB);
+		//printf("现在最高的优先级：%d\n",TopPriorityReadyProcess);
+		//printf("现在执行的进程id：%d\n", CurrentPCB_pointer->IDofPCB);
 		int*value=NULL;
 		
 		//PCB_t*current = CurrentPCB_pointer;
@@ -454,7 +454,7 @@ void startScheduler()
 
 		
 		if (exit_signal == 1) {
-			printf("要删除的进程：%s\n",(*processExitBuf)->pcb->PCBname);
+			//printf("要删除的进程：%s\n",(*processExitBuf)->pcb->PCBname);
 			DeleteProcess((*processExitBuf)->pcb);
 			
 			//OSstackSimulatorItem*iter = (*STATIC_OS_STACK)->startSimulatorItem->next;
@@ -486,7 +486,7 @@ void startScheduler()
 void runInFreeTime(void*a) {
 	while (1) {
 		Sleep(tickTime/2);
-		printf("系统当前空闲\n");
+		//printf("系统当前空闲\n");
 	}
 }
 

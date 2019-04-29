@@ -33,7 +33,7 @@ DWORD WINAPI startTimer(LPVOID param) {
 		
 		Sleep(tickTime);
 		//Sleep(50);
-		printf("\n时钟数:%d\n",tickCount);
+		//printf("\n时钟数:%d\n",tickCount);
 		checkTickCountOverflow();
 		WaitForSingleObject(tickCountMutex, INFINITE);
 		//时钟加一
