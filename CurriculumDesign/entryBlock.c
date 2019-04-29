@@ -147,6 +147,7 @@ void printInformation() {
 	}*/
 	printf("\n");
 	
+
 }
 
 int main() {
