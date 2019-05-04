@@ -104,6 +104,7 @@ int deletePcbFromStack(int idOfPcb)
 					//free(pcb);
 					//free(iterator->next);
 					(*STATIC_OS_STACK)->currentDeepth--;
+					printf("É¾³ýÁËÒ»¸östack");
 					break;
 				}
 			}
@@ -120,7 +121,7 @@ PCB_t* findPCB_ById(int id)
 	if ((*STATIC_OS_STACK)->currentDeepth != 0) {
 		iterator = (*STATIC_OS_STACK)->startSimulatorItem->next;
 		for (;;) {
-			if (iterator->index = id) {
+			if (iterator->pcb->IDofPCB == id) {
 				result = iterator->pcb;
 			}
 			

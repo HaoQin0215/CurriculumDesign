@@ -7,11 +7,16 @@ static volatile long SchedulerSuspended = (long)FALSE;
 
 void  FindTopProrityProcess()
 { 
-	unsigned int topProrityProcess = TopPriorityReadyProcess;
-	while(LIST_IS_EMPTY(ProcessReadyList[topProrityProcess])){	
-		--topProrityProcess; 
-	}		 
-	listChangeListItemWithTime(ProcessReadyList[topProrityProcess]); 
+	unsigned int topProrityProcess = MAX_PROCESS_PRIORITY-1;
+	
+	
+	while (listIsEmpty(ProcessReadyList[topProrityProcess])) {
+			
+			--topProrityProcess;
+		}
+	//printf("当前最高优先级：%d\n", topProrityProcess);
+		listChangeListItemWithTime(ProcessReadyList[topProrityProcess]);
+	
 	TopPriorityReadyProcess = topProrityProcess;
 }
 
@@ -96,13 +101,13 @@ int initStaticLists()
 		|| ProcessDeleteListLastItem==NULL) {
 		result = 0;
 	}
-	if (result == 0) {
+	/*if (result == 0) {
 
 		freeStaticLists();
 	}
 	else {
 		result = 1;
-	}
+	}*/
 	return result;
 }
 
@@ -256,6 +261,7 @@ void addProcessToReadyList(PCB_t * newPcb)
 		    //切换新建进程为当前进程
 			if (newPcb->processPriority >= CurrentPCB_pointer->processPriority) {
 				TopPriorityReadyProcess = newPcb->processPriority;
+				CurrentPCB_pointer->status = READY;
 				CurrentPCB_pointer = newPcb;
 			}
 			//printf("%d %d", newPcb->processPriority, TopPriorityReadyProcess);
@@ -265,6 +271,7 @@ void addProcessToReadyList(PCB_t * newPcb)
 				//打断调度器，切换任务进程
 				schedulerStopAll();
 				TopPriorityReadyProcess = newPcb->processPriority;
+				CurrentPCB_pointer->status = READY;
 				CurrentPCB_pointer = newPcb;
 			
 				schedulerResume();
@@ -322,6 +329,7 @@ int DeleteProcess(PCB * pcb)
 		}
 		
 		
+		
 		result = 1;
 		myFree(pcb);
 	}
@@ -337,7 +345,7 @@ int BlockedProcess(int pcbID)
 	int prority = pcbToBlock->processPriority;
 	
 	if (0 == ProcessReadyList[prority]->numberOfProcesses) {
-		printf("进程已经退出！\n");
+		//printf("进程已经退出！\n");
 		return 0;
 	}
 
@@ -345,13 +353,18 @@ int BlockedProcess(int pcbID)
 	//printf("控制块优先级：%d,列表项优先级:%d",pcbToBlock->processPriority,ItemOfRemoveToBlockList->priorityValue);
 	/*printf("进程数量：%d",ItemOfRemoveToBlockList->hostList->numberOfProcesses);*/
 	//ENTER_CRITICAL();
-	{
+	else{
 		DeleteFromList(pcbToBlock->hostItem);
 		InsertItemIntoProcessList(pcbToBlock->hostItem,ProcessBlockingList);
+		blocking_signal = 1;
 		pcbToBlock->status = BLOCKING;
+
+		
+		
+		return 1;
 	}
 	//EXIT_CRITICAL();
-	return 1;
+	
 }
 
 int WakeupProcess(int pcbID)
@@ -422,11 +435,11 @@ void processSwitchContext()
 //进程处理函数(执行进程函数)
 DWORD WINAPI processThreadFun(LPVOID param)
 {
-	for (;;) {
+	
 		
 		FindTopProrityProcess();
 		//printf("现在最高的优先级：%d\n",TopPriorityReadyProcess);
-		//printf("现在执行的进程id：%d\n", CurrentPCB_pointer->IDofPCB);
+		//printf("现在执行的进程：%s\n", CurrentPCB_pointer->PCBname);
 		int*value=NULL;
 		
 		//PCB_t*current = CurrentPCB_pointer;
@@ -439,7 +452,7 @@ DWORD WINAPI processThreadFun(LPVOID param)
 		CurrentPCB_pointer->status = RUNNING;
 	    (CurrentPCB_pointer->function)(value);
 		
-	}
+	
 }
 
 void startScheduler()
@@ -453,7 +466,8 @@ void startScheduler()
 		//WaitForSingleObject(toKillProcessThread,INFINITE);
 
 		
-		if (exit_signal == 1) {
+		if (exit_signal == TRUE) {
+			
 			//printf("要删除的进程：%s\n",(*processExitBuf)->pcb->PCBname);
 			DeleteProcess((*processExitBuf)->pcb);
 			
@@ -470,13 +484,17 @@ void startScheduler()
 			
 			//FindTopProrityProcess();
 	
-			exit_signal = 0;
+			exit_signal = FALSE;
 		}
 		TerminateThread(processThread, 0);
 		//ReleaseMutex(modifyListMutex);
 		//ReleaseMutex(timeInterruptMutex);
 		if (CurrentPCB_pointer != NULL) {
 			CurrentPCB_pointer->status = READY;
+		}
+		if (blocking_signal = 1&&CurrentPCB_pointer!=NULL) {
+			CurrentPCB_pointer->status = BLOCKING;
+			blocking_signal = 0;
 		}
 		processThread=CreateThread(NULL, 0, processThreadFun, NULL, 0, NULL);
 
@@ -487,7 +505,14 @@ void runInFreeTime(void*a) {
 	while (1) {
 		Sleep(tickTime/2);
 		//printf("系统当前空闲\n");
+		
 	}
+}
+
+int listIsEmpty(ProcessList * list)
+{
+	if (list->numberOfProcesses == 0) return 1;
+	else return 0;
 }
 
 

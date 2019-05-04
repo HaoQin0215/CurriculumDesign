@@ -5,7 +5,7 @@
 #include"stackSimulator.h"
 #include"process.h"
 #include<mmsystem.h>
-
+#define MAX_RUN_TIME 2000000000
 
 void test(void*a) {
 	srand(time(NULL));
@@ -17,26 +17,28 @@ void test(void*a) {
 		Sleep(rand()%100+50);
 		//WaitForSingleObject(toKillProcessThread, INFINITE);
 		OSstackSimulatorItem_t*placeOfValue = findRunningItem();
-		//printf("%s\n",placeOfValue->pcb->PCBname);
+		//printf("test现在执行的进程:%s\n",placeOfValue->pcb->PCBname);
 		//printf("进程的运行结果(将被写会内存):%d\n",count);
-		
-		ENTER_CRITICAL();
-		{
-			placeOfValue->functionValue = (int*)count;
-			
-			//printf("更新完成\n");
-			//printf("%d\n",(*STATIC_OS_STACK)->startSimulatorItem->next->functionValue);
-		}
-		EXIT_CRITICAL();
-		//ReleaseSemaphore(toKillProcessThread,1,NULL);
-		clock_t end = clock()-start;
-		placeOfValue->pcb->runTime -= end;
-		if (placeOfValue->pcb->runTime < 0) {
-			
-			(*processExitBuf)->pcb = placeOfValue->pcb;
-			
-			exit_signal = TRUE;
-			return;
+		if (placeOfValue != NULL ) {
+			ENTER_CRITICAL();
+			{
+
+				placeOfValue->functionValue = count;
+
+				//printf("更新完成\n");
+				//printf("%d\n",(*STATIC_OS_STACK)->startSimulatorItem->next->functionValue);
+			}
+			EXIT_CRITICAL();
+			//ReleaseSemaphore(toKillProcessThread,1,NULL);
+			clock_t end = clock() - start;
+			placeOfValue->pcb->runTime -= end;
+			if (placeOfValue->pcb->runTime < 0) {
+
+				(*processExitBuf)->pcb = placeOfValue->pcb;
+
+				exit_signal = TRUE;
+				return;
+			}
 		}
 		//printf("剩余时间:%d\n", placeOfValue->pcb->runTime);
 	}
@@ -68,13 +70,14 @@ DWORD WINAPI displayFun(LPVOID param) {
 	int pcbIdToWakeUp = -1;
 	int pcbIdToDelete = -1;
 	PCB*pcbTemp;
-	for (;;) {
+	while(1) {
+		
 		printf("|--------------------------------------------------------------------------------------------------|\n");
 		printf("|请选择您要进行的操作：(1)创建进程 (2)阻塞进程 (3)唤醒进程 (4)终止进程 (5)显示进程信息 (0)退出程序|\n");
 		scanf_s("%d", &choice);
 		switch (choice) {
 		case 0:
-			return;
+			break;
 		case 1:
 			printf("|-------------------------------------------创建进程------------------------------------------------|\n");
 			printf("|进程名称：");
@@ -86,36 +89,37 @@ DWORD WINAPI displayFun(LPVOID param) {
 			printf("\n|程序运行时间:");
 			scanf_s("%lld", &runTime);
 			pcbToCreate = (PCB_t**)malloc(sizeof(PCB_t));
-			int result = CreateNewProcess(test, name, 1, (int*)paramter, prority, pcbToCreate, runTime);
+			CreateNewProcess(test, name, 1, (int*)paramter, prority, pcbToCreate, runTime*CLOCKS_PER_SEC);
 			printf("|创建成功!\n");
 
 			break;
 		case 2:
 			printf("|-------------------------------------------阻塞进程----------------------------------------------|\n");
 			printf("|阻塞的进程ID：");
-			scanf_s("%d", pcbIdToBlock);
+			scanf_s("%d", &pcbIdToBlock);
 			BlockedProcess(pcbIdToBlock);
 			printf("|阻塞成功！\n");
 			break;
 		case 3:
 			printf("|-------------------------------------------唤醒进程----------------------------------------------|\n");
 			printf("|要唤醒的进程ID:");
-			scanf_s("%d", pcbIdToWakeUp);
+			scanf_s("%d", &pcbIdToWakeUp);
 			WakeupProcess(pcbIdToWakeUp);
 			printf("|唤醒成功！\n");
 			break;
 		case 4:
 			printf("|-------------------------------------------终止进程-----------------------------------------------|\n");
 			printf("|要终止的进程ID:");
-			scanf_s("%d", pcbIdToDelete);
+			scanf_s("%d", &pcbIdToDelete);
 			pcbTemp = findPCB_ById(pcbIdToDelete);
 			DeleteProcess(pcbTemp);
 			printf("|终止成功！\n");
 			break;
 		case 5:
 			printf("|------------------------------------------显示进程信息--------------------------------------------|\n");
-			printf("进程名称\t进程ID\t进程状态\t进程优先级\t进程运行剩余时间\n");
+			printf("进程名称\t进程ID\t进程状态\t进程优先级\t进程运行剩余时间\t进程当前结果\n");
 			printInformation();
+			
 			break;
 		default:
 			printf("输入有误，请重新输入!\n");
@@ -124,30 +128,18 @@ DWORD WINAPI displayFun(LPVOID param) {
 }
 void printInformation() {
 
-	OSstackSimulatorItem*iter = (*STATIC_OS_STACK)->startSimulatorItem->next;
+	OSstackSimulatorItem*iter = (*STATIC_OS_STACK)->startSimulatorItem;
 
-	for (int i = 0; ; i++) {
-			if (iter == iter->next) break;
+	while(1){
+		iter = iter->next;
+			if (iter== (*STATIC_OS_STACK)->startSimulatorItem) break;
 			if (iter->pcb!= NULL) {
-					printf("  %s  \t\t  %d  \t %d \t\t   %d   \t\t      %d   \n",
+					printf("  %s  \t\t  %d  \t %d \t\t   %d   \t\t      %d   \t%d\n",
 						iter->pcb->PCBname, iter->pcb->IDofPCB, iter->pcb->status,
-						iter->pcb->processPriority, iter->pcb->runTime);
-			
-				iter = iter->next;
+						iter->pcb->processPriority, iter->pcb->runTime,iter->functionValue);
 			}
 	}
-	/*for (int i = 0;; i++) {
-		item = ProcessBlockingList->lastItem->next;
-		if (item == ProcessBlockingList->lastItem) break;
-		if (item != RunningItem) {
-			printf("  %s  \t  %d  \t Ready \t   %d   \t      %d   \n",
-				((PCB*)item->PCB_block)->PCBname, ((PCB*)item->PCB_block)->IDofPCB,
-				((PCB*)item->PCB_block)->processPriority, ((PCB*)item->PCB_block)->runTime);
-		}
-	}*/
 	printf("\n");
-	
-
 }
 
 int main() {
@@ -157,7 +149,8 @@ int main() {
 	initOSstackSimulator();
 	initStaticLists();
 	initSemphores();
-	exit_signal = 0;
+	exit_signal = FALSE;
+	blocking_signal = 0;
 	processExitBuf =malloc(sizeof(EXIT_PROCESS));
 
 	(*processExitBuf) = (EXIT_PROCESS*)malloc(sizeof(EXIT_PROCESS));
@@ -168,46 +161,35 @@ int main() {
 	PCB_t **freeProcess = malloc(sizeof(PCB));
 	char name3[MAX_NAME_LENGTH] = "FreeProcess";
 
-	CreateNewProcess(runInFreeTime, name3, 1, NULL, 0, freeProcess, INFINITE * CLOCKS_PER_SEC);
+	CreateNewProcess(runInFreeTime, name3, 1, NULL, 0, freeProcess, INFINITE);
+	//
+	//PCB_t **pcb2 = malloc(sizeof(PCB));
+	//char name2[MAX_NAME_LENGTH] = "P0";
 
-	PCB_t **pcb2 = malloc(sizeof(PCB));
-	char name2[MAX_NAME_LENGTH] = "P3";
+	//CreateNewProcess(test, name2, 1, (int*)12, 1, pcb2, MAX_RUN_TIME);
 
-	CreateNewProcess(test, name2, 1, (int*)12, 1, pcb2,4*CLOCKS_PER_SEC);
+	//PCB_t **pcb1=malloc(sizeof(PCB));
+	//char name1[MAX_NAME_LENGTH] = "P2";
 
-	PCB_t **pcb1=malloc(sizeof(PCB));
-	char name1[MAX_NAME_LENGTH] = "P2";
+	//CreateNewProcess(test, name1, 11, (int*)19, 2, pcb1, MAX_RUN_TIME);
 
-	CreateNewProcess(test, name1, 11, (int*)19, 2, pcb1, 1* CLOCKS_PER_SEC);
+	//
+	//PCB_t **pcb = malloc(sizeof(PCB));
+	//char name[MAX_NAME_LENGTH] = "P1";
 
-	
-	PCB_t **pcb = malloc(sizeof(PCB));
-	char name[MAX_NAME_LENGTH] = "P1";
-
-	CreateNewProcess(test, name, 1, (int*)4, 3, pcb, 2 * CLOCKS_PER_SEC);
+	//CreateNewProcess(test, name, 1, (int*)4, 3, pcb, MAX_RUN_TIME);
 
 
-	//BlockedProcess((*pcb)->IDofPCB);
-	//printf("优先级就绪队列3是否为空：%d\n",LIST_IS_EMPTY(ProcessReadyList[3]));
-	//WakeupProcess((*pcb)->IDofPCB);
-	//printf("优先级就绪队列3是否为空：%d\n", LIST_IS_EMPTY(ProcessReadyList[3]));
-	//printf("%s\n",((PCB_t*)(ProcessReadyList[4]->lastItem->PCB_block))->PCBname);
+
 	
 	CreateTimer();
 	HANDLE display = CreateThread(NULL, 0, displayFun, NULL, 0, NULL);
 	startScheduler();
-	/*pr(1);
-	DeleteProcess(*pcb);
-	pr(1);
+	
 
-	DeleteProcess(*pcb1);
-	pr(1);
-
-	DeleteProcess(*pcb2);
-	pr(1);
-*/
 
 	free(*processExitBuf);
+	free(processExitBuf);
 	freeStaticLists();
 	system("pause");
 	return 0;

@@ -1,6 +1,6 @@
 #pragma once
 #define MAX_NAME_LENGTH 20
-#define MAX_PROCESS_PRIORITY 30
+#define MAX_PROCESS_PRIORITY 35
 #include"list.h"
 
 #define FALSE ((long)0)
@@ -39,7 +39,7 @@ typedef struct ProcessControllBlock {
 	//进程运行时间
 	clock_t runTime;
 	//进程名称
-	char* PCBname[MAX_NAME_LENGTH];
+	char PCBname[MAX_NAME_LENGTH];
 	//进程优先级
 	unsigned int processPriority;
 	//进程状态
@@ -52,9 +52,12 @@ typedef struct ProcessControllBlock {
 	int stackPosition;
 }PCB;
 typedef PCB PCB_t;
+//进程结束的存储体
 typedef struct EXIT_PROCESS {
 	PCB_t*pcb;
 }EXIT_PROCESS;
+
+
 
 
 //正在处理的进程
@@ -92,5 +95,7 @@ static long xYieldPending  = 0;
 int exit_signal ;
 
 EXIT_PROCESS **processExitBuf;
+
+
 
 

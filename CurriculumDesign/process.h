@@ -2,7 +2,8 @@
 #include"pcbUtil.h"
 #include"ticks.h"
 #define GET_PCB_STATUS(pcb) (pcb->status)
-
+//阻塞进程的信号
+int blocking_signal;
 
 //进程工作函数
 DWORD WINAPI processThreadFun(LPVOID param);
@@ -50,3 +51,4 @@ DWORD WINAPI processThreadFun(LPVOID param);
 	void runInFreeTime(void*a);
 
 	
+	int listIsEmpty(ProcessList*list);

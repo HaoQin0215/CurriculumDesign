@@ -30,7 +30,7 @@ void InsertItemIntoProcessList(ListItem * item, ProcessList * list)
 	ListItem* itemIterator;
 
 	volatile unsigned newPriorityValue = item->priorityValue;
-	printf("%d\n",newPriorityValue);
+	//printf("%d\n",newPriorityValue);
 	if (newPriorityValue == MAX_subordinateListItemValue) {
 		itemIterator = list->lastItem->previous;
 	}

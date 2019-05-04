@@ -43,7 +43,7 @@ typedef struct ProcessList {
 #define MAX_PORCESS_NUMBER 20
 
 //定义最低优先级
-#define MAX_subordinateListItemValue 30
+#define MAX_subordinateListItemValue 35
 
 //获得当前链表进程数
 #define GET_LIST_NUMBER(List) ((List)->numberOfProcesses)
