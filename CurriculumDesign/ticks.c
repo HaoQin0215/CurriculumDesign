@@ -1,6 +1,5 @@
-ï»¿#include<stdio.h>
-
 #include"ticks.h"
+#include<stdio.h>
 
 void initSemphores()
 {
@@ -10,13 +9,13 @@ void initSemphores()
 
 	tickCountMutex = CreateMutex(NULL, TRUE, NULL);
 
-	INTERRUPTION = CreateSemaphore(NULL, 0, 1, NULL);
+	INTERRUPTION = CreateSemaphore(NULL,0,1,NULL);
 	//INTERRUPTION = CreateMutex(NULL, TRUE, NULL);
 
-	schedulerMutex = CreateMutex(NULL, TRUE, NULL);
+	schedulerMutex= CreateMutex(NULL, TRUE, NULL);
 
 	//toKillProcessThread = CreateSemaphore(NULL, 0, 1, NULL);
-
+    
 	ReleaseMutex(timeInterruptMutex);
 	ReleaseMutex(modifyListMutex);
 	ReleaseMutex(tickCountMutex);
@@ -27,66 +26,79 @@ void initSemphores()
 
 DWORD WINAPI startTimer(LPVOID param) {
 	tickCount = 0;
-	while (1) {
 
+	
+
+	while (1) {
+		
 		Sleep(tickTime);
 		//Sleep(50);
-		printf("\næ—¶é’Ÿæ•°:%d\n", tickCount);
+		//printf("\nÊ±ÖÓÊı:%d\n",tickCount);
 		checkTickCountOverflow();
 		WaitForSingleObject(tickCountMutex, INFINITE);
-		//æ—¶é’ŸåŠ ä¸€
+		//Ê±ÖÓ¼ÓÒ»
 		tickCount++;
 
 		ReleaseMutex(tickCountMutex);
-		//è·å¾—ä¿®æ”¹æ—¶é’Ÿä¸­æ–­ä¿¡å·çš„ä¿¡å·é‡ï¼Œç”¨äºåœ¨è¿›ç¨‹è¿›å…¥ä¸´ç•ŒåŒºç­‰æƒ…å†µä¸‹å…³ä¸­æ–­
-		WaitForSingleObject(timeInterruptMutex, INFINITE);
+		//»ñµÃĞŞ¸ÄÊ±ÖÓÖĞ¶ÏĞÅºÅµÄĞÅºÅÁ¿£¬ÓÃÓÚÔÚ½ø³Ì½øÈëÁÙ½çÇøµÈÇé¿öÏÂ¹ØÖĞ¶Ï
+		WaitForSingleObject(timeInterruptMutex,INFINITE);
 
-		ReleaseSemaphore(INTERRUPTION, 1, NULL);
+		ReleaseSemaphore(INTERRUPTION,1,NULL);
 
 		ReleaseMutex(timeInterruptMutex);
+
+		
+
+		
+
 	}
 
 }
-//åˆ¤æ–­æ—¶é’Ÿè®¡æ•°æ˜¯å¦æº¢å‡º
+//ÅĞ¶ÏÊ±ÖÓ¼ÆÊıÊÇ·ñÒç³ö
 BOOL checkTickCountOverflow() {
 
 	BaseType_t currentTickCount = 0;
 
 	BOOL result;
-	//è·å¾—è®¿é—®æ—¶é’Ÿè®¡æ•°çš„ä¿¡å·é‡
-	WaitForSingleObject(tickCountMutex, INFINITE);
+	//»ñµÃ·ÃÎÊÊ±ÖÓ¼ÆÊıµÄĞÅºÅÁ¿
+	WaitForSingleObject(tickCountMutex,INFINITE);
 
-	currentTickCount = tickCount;
-	//å¦‚æœæº¢å‡ºè¿”å›
-	if ((currentTickCount++) < currentTickCount) {
+		currentTickCount = tickCount;
+		//Èç¹ûÒç³ö·µ»Ø
+		if ((currentTickCount++) < currentTickCount) {
 
-		result = FALSE;
-		tickCount = 0;
-	}
-	else {
-		result = TRUE;
-	}
+			result = FALSE;
+
+			tickCount = 0;
+		}else{
+			result = TRUE;
+		}
 
 	ReleaseMutex(tickCountMutex);
 
-	return result;
+		return result;
+
 }
 
 void CreateTimer() {
 
 	timerThread = CreateThread(NULL, 0, startTimer, NULL, 0, NULL);
+	
 }
 
 void enter_list_critical()
 {
-	//é€šè¿‡è·å¾—æ—¶é’Ÿä¿¡å·äº’æ–¥é”è¾¾åˆ°å…³ä¸­æ–­çš„ç›®çš„
-	WaitForSingleObject(timeInterruptMutex, INFINITE);
-	//ä¿®æ”¹åˆ—è¡¨çš„äº’æ–¥é”
+	//Í¨¹ı»ñµÃÊ±ÖÓĞÅºÅ»¥³âËø´ïµ½¹ØÖĞ¶ÏµÄÄ¿µÄ
+	WaitForSingleObject(timeInterruptMutex,INFINITE);
+	//ĞŞ¸ÄÁĞ±íµÄ»¥³âËø
 	WaitForSingleObject(modifyListMutex, INFINITE);
+
+
 }
 
 void exit_list_critical()
 {
-	ReleaseMutex(modifyListMutex);
+
+    ReleaseMutex(modifyListMutex);
 	ReleaseMutex(timeInterruptMutex);
 }

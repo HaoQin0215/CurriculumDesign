@@ -1,45 +1,35 @@
-ï»¿#include<Windows.h>
+#include<Windows.h>
 #include<signal.h>
 #include<stdint.h>
-
-//æ—¶é’Ÿè®¡æ•°å™¨
+//Ê±ÖÓ¼ÆÊıÆ÷
 long volatile tickCount;
-
-//åŸºæœ¬ç±»å‹
+//»ù±¾ÀàĞÍ
 typedef long BaseType_t;
-
-//æ—¶é’ŸèŠ‚æ‹ç±»å‹
+//Ê±ÖÓ½ÚÅÄÀàĞÍ
 typedef uint32_t TickType_t;
-
-//å †æ ˆç±»å‹
+//¶ÑÕ»ÀàĞÍ
 typedef unsigned int StackType_t;
-
-//å¼€å¯ä¸­æ–­ä¿¡å·é‡
+//¿ªÆôÖĞ¶ÏĞÅºÅÁ¿
 HANDLE timeInterruptMutex;
-
-//æ›´æ”¹è¿›ç¨‹åˆ—è¡¨æˆ–è€…å…¨å±€æ•°æ®ç»“æ„çš„ä¿¡å·é‡
+//¸ü¸Ä½ø³ÌÁĞ±í»òÕßÈ«¾ÖÊı¾İ½á¹¹µÄĞÅºÅÁ¿
 HANDLE modifyListMutex;
-
-//æ—¶é’Ÿè®¡æ•°å™¨ä¿¡å·é‡
+//Ê±ÖÓ¼ÆÊıÆ÷ĞÅºÅÁ¿
 HANDLE tickCountMutex;
-
-//ä¸­æ–­ä¿¡å·é‡
+//ÖĞ¶ÏĞÅºÅÁ¿
 HANDLE INTERRUPTION;
 
-//æ€æ­»çº¿ç¨‹çš„ä¿¡å·é‡
+//É±ËÀÏß³ÌµÄĞÅºÅÁ¿
 HANDLE toKillProcessThread;
 
-//è°ƒåº¦å™¨é˜»å¡ä¿¡å·é‡
+//µ÷¶ÈÆ÷×èÈûĞÅºÅÁ¿
 HANDLE schedulerMutex;
-
-//åˆå§‹åŒ–ä¿¡å·é‡
+//³õÊ¼»¯ĞÅºÅÁ¿
 void initSemphores();
 
 
-//è¿›ç¨‹æ¨¡æ‹Ÿå·¥ä½œçº¿ç¨‹
+//½ø³ÌÄ£Äâ¹¤×÷Ïß³Ì
 HANDLE processThread;
-
-//æ—¶é’Ÿå·¥ä½œçº¿ç¨‹
+//Ê±ÖÓ¹¤×÷Ïß³Ì
 HANDLE timerThread;
 
 #define tickTime 500
@@ -48,17 +38,17 @@ HANDLE timerThread;
 
 #define EXIT_CRITICAL() exit_list_critical()
 
-//è®¡æ•°å™¨çº¿ç¨‹æ‰§è¡Œå‡½æ•°
+//¼ÆÊıÆ÷Ïß³ÌÖ´ĞĞº¯Êı
 DWORD WINAPI startTimer(LPVOID param);
-
-//æ£€æŸ¥è®¡æ•°å™¨æ˜¯å¦æº¢å‡º
+//¼ì²é¼ÆÊıÆ÷ÊÇ·ñÒç³ö
 BOOL checkTickCountOverflow();
-
-//åˆ›å»ºè®¡æ•°å™¨
+//´´½¨¼ÆÊıÆ÷
 void CreateTimer();
-
-//è¿›å…¥ä¿®æ”¹åˆ—è¡¨æ•°æ®ç»“æ„ä¸´ç•ŒåŒº
+//½øÈëĞŞ¸ÄÁĞ±íÊı¾İ½á¹¹ÁÙ½çÇø
 void enter_list_critical();
-
-//é€€å‡ºä¿®æ”¹æ•°æ®ç»“æ„ä¸´ç•ŒåŒº
+//ÍË³öĞŞ¸ÄÊı¾İ½á¹¹ÁÙ½çÇø
 void exit_list_critical();
+
+
+
+

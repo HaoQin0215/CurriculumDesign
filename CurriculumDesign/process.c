@@ -1,50 +1,57 @@
-Ôªø#include<stddef.h>
-#include<string.h>
-
 #include "process.h"
 #include"stackSimulator.h"
-
-//Áî®‰∫éÊåÇËµ∑Ë∞ÉÂ∫¶Âô®ÁöÑÂèòÈáè
+#include<stddef.h>
+#include<string.h>
+//”√”⁄π“∆µ˜∂»∆˜µƒ±‰¡ø
 static volatile long SchedulerSuspended = (long)FALSE;
 
 void  FindTopProrityProcess()
-{
-	unsigned int topProrityProcess = TopPriorityReadyProcess;
-	while (LIST_IS_EMPTY(ProcessReadyList[topProrityProcess])) {
-		--topProrityProcess;
-	}
-	listChangeListItemWithTime(ProcessReadyList[topProrityProcess]);
+{ 
+	unsigned int topProrityProcess = MAX_PROCESS_PRIORITY-1;
+	
+	
+	while (listIsEmpty(ProcessReadyList[topProrityProcess])) {
+			
+			--topProrityProcess;
+		}
+	//printf("µ±«∞◊Ó∏ﬂ”≈œ»º∂£∫%d\n", topProrityProcess);
+		listChangeListItemWithTime(ProcessReadyList[topProrityProcess]);
+	
 	TopPriorityReadyProcess = topProrityProcess;
 }
 
 void proSELECT_HIGHEST_PRIORITY_PROCESS()
 {
-	unsigned int uxTopPriority = TopPriorityReadyProcess;
+	unsigned int uxTopPriority=TopPriorityReadyProcess;
 	FindTopProrityProcess();
-	listChangeListItemWithTime(ProcessReadyList[uxTopPriority]);
+	listChangeListItemWithTime(ProcessReadyList[ uxTopPriority ] );
 }
 
-//Êó∂Èó¥ÁâáÂà∞Êó∂ÂàáÊç¢ÂàóË°®È°π
+
+
+
+// ±º‰∆¨µΩ ±«–ªª¡–±ÌœÓ
 void listChangeListItemWithTime(ProcessList * list)
 {
 	ProcessList* ConstList = (list);
-	//printf("ÂàáÊç¢‰πãÂâçÁöÑËøõÁ®ãidÔºö%d\n", CurrentPCB_pointer->IDofPCB);
+	//printf("«–ªª÷Æ«∞µƒΩ¯≥Ãid£∫%d\n", CurrentPCB_pointer->IDofPCB);
 	ConstList->ListItemIndex = ConstList->ListItemIndex->next;
 	if (ConstList->ListItemIndex == ConstList->lastItem) {
 		ConstList->ListItemIndex = ConstList->ListItemIndex->next;
 	}
 	CurrentPCB_pointer = ConstList->ListItemIndex->PCB_block;
-	//printf("Áé∞Âú®ÊâßË°åÁöÑËøõÁ®ãidÔºö%d\n", CurrentPCB_pointer->IDofPCB);
+	//printf("œ÷‘⁄÷¥––µƒΩ¯≥Ãid£∫%d\n", CurrentPCB_pointer->IDofPCB);
 }
 
 int initStaticLists()
 {
+
 	int result = 1;
 	ListItem* ProcessReadyListLastItem[MAX_PROCESS_PRIORITY];
 
-	ListItem* ProcessBlockingListLastItem = (ListItem*)malloc(sizeof(ListItem));
+	ListItem* ProcessBlockingListLastItem= (ListItem*)malloc(sizeof(ListItem));
 
-	ListItem* ProcessDeleteListLastItem = (ListItem*)malloc(sizeof(ListItem));
+	ListItem* ProcessDeleteListLastItem= (ListItem*)malloc(sizeof(ListItem));
 
 	for (int i = 0; i < MAX_PROCESS_PRIORITY; i++) {
 
@@ -69,7 +76,7 @@ int initStaticLists()
 	InitProcessList(ProcessBlockingList);
 
 
-	SET_LIST_STATE(ProcessBlockingList, LISTBlocking);
+	SET_LIST_STATE(ProcessBlockingList,LISTBlocking);
 
 
 	ProcessDeleteList = (ProcessList*)malloc(sizeof(ProcessList));
@@ -80,7 +87,7 @@ int initStaticLists()
 
 	InitProcessList(ProcessDeleteList);
 
-	SET_LIST_STATE(ProcessDeleteList, LISTDelete);
+	SET_LIST_STATE(ProcessDeleteList,LISTDelete);
 
 	for (int i = 0; i < MAX_PROCESS_PRIORITY; i++) {
 
@@ -90,17 +97,17 @@ int initStaticLists()
 
 		}
 	}
-	if (ProcessBlockingList == NULL || ProcessDeleteList == NULL || ProcessBlockingListLastItem == NULL
-		|| ProcessDeleteListLastItem == NULL) {
+	if (ProcessBlockingList == NULL || ProcessDeleteList == NULL || ProcessBlockingListLastItem==NULL
+		|| ProcessDeleteListLastItem==NULL) {
 		result = 0;
 	}
-	if (result == 0) {
+	/*if (result == 0) {
 
 		freeStaticLists();
 	}
 	else {
 		result = 1;
-	}
+	}*/
 	return result;
 }
 
@@ -114,18 +121,18 @@ void freeStaticLists()
 	free(ProcessBlockingList);
 
 	free(ProcessDeleteList);
-
+	
 }
 
 int CreateNewProcess(ProcessFunction_t function, const char * const name, const unsigned int stackLength,
-	void * const parameters, unsigned int prority, PCB**pcb, time_t runTime)
+					void * const parameters,	 unsigned int prority, PCB**pcb,time_t runTime)
 {
 	PCB_t* newPCB;
 	int createResult;
-
+	
 	newPCB = myMalloc(sizeof(PCB_t));
 	if (newPCB != NULL) {
-		if (addPcbToStack(newPCB, parameters) == 0) {
+		if (addPcbToStack(newPCB,parameters) == 0) {
 			myFree(newPCB);
 
 			newPCB = NULL;
@@ -133,26 +140,26 @@ int CreateNewProcess(ProcessFunction_t function, const char * const name, const 
 		}
 		else {
 
-			InitialNewProcess(function, name, stackLength, parameters, prority, newPCB, runTime);
+			InitialNewProcess(function, name, stackLength, parameters, prority, newPCB,runTime);
 
 			addProcessToReadyList(newPCB);
-
+			
 
 			newPCB->status = READY;
 
 			createResult = 1;
 
 		}
-
+		
 	}
-
+	
 	*pcb = newPCB;
 
 	return createResult;
 }
 
-void InitialNewProcess(ProcessFunction_t function, const char * const name,
-	const unsigned int stackLength, void * const parameters, unsigned int prority, PCB * pcb, time_t runTime)
+void InitialNewProcess(ProcessFunction_t function, const char * const name, 
+	const unsigned int stackLength, void * const parameters, unsigned int prority, PCB * pcb,time_t runTime)
 {
 
 	pcb->function = function;
@@ -164,21 +171,21 @@ void InitialNewProcess(ProcessFunction_t function, const char * const name,
 		pcb->PCBname[i] = name[i];
 	}
 	pcb->PCBname[MAX_NAME_LENGTH - 1] = '\0';*/
-	strcpy_s(pcb->PCBname, MAX_NAME_LENGTH, name);
+	strcpy_s(pcb->PCBname, MAX_NAME_LENGTH,name);
 
 	pcb->stackAddress.length = stackLength;
 
-	if (prority >= MAX_PROCESS_PRIORITY || prority < 0) {
-		printf("ËøõÁ®ã‰ºòÂÖàÁ∫ßÈîôËØØ");
+	if (prority >= MAX_PROCESS_PRIORITY||prority<0) {
+		printf("Ω¯≥Ã”≈œ»º∂¥ÌŒÛ");
 		pcb->processPriority = 0;
 	}
 	else {
 		pcb->processPriority = prority;
 	}
-
+	
 	pcb->IDofPCB = pcb->stackPosition;
-	//printf("ËøõÁ®ãidÔºö%d\n", pcb->IDofPCB);
-	//ÂàùÂßãÂåñÂ†ÜÊ†à‰∏≠ÁöÑËøõÁ®ã‰ªªÂä°ÂàùÂßãÂèÇÊï∞
+	//printf("Ω¯≥Ãid£∫%d\n", pcb->IDofPCB);
+	//≥ı ºªØ∂—’ª÷–µƒΩ¯≥Ã»ŒŒÒ≥ı º≤Œ ˝
 	pcb->runTime = runTime;
 
 }
@@ -189,18 +196,18 @@ void addProcessToReadyList(PCB_t * newPcb)
 {
 
 	int prority = newPcb->processPriority;
-	//ÂΩìÂâçËøõÁ®ãÊåáÈíàÊòØÂê¶‰∏∫Á©∫
+	//µ±«∞Ω¯≥Ã÷∏’Î «∑ÒŒ™ø’
 	if (CurrentPCB_pointer == NULL) {
 		CurrentPCB_pointer = newPcb;
-		//ÂΩìÂâçËøõÁ®ãÊï∞Èáè‰∏∫0
-		if (CurrentProcessNumer == 0 && ProcessReadyList == NULL) {
+		//µ±«∞Ω¯≥Ã ˝¡øŒ™0
+		if (CurrentProcessNumer == 0 && ProcessReadyList==NULL) {
 			int initResult = initStaticLists();
-			//ÂàùÂßãÂåñÈùôÊÄÅÂÖ®Â±ÄÂàóË°®Â§±Ë¥•
+			//≥ı ºªØæ≤Ã¨»´æ÷¡–±Ì ß∞‹
 			if (initResult == 0) {
-				printf("Â∞±Áª™ÂàóË°®ÂàùÂßãÂåñÈîôËØØ\n");
+				printf("æÕ–˜¡–±Ì≥ı ºªØ¥ÌŒÛ\n");
 				return;
 			}
-			//ÂàùÂßãÂåñÊàêÂäü
+			//≥ı ºªØ≥…π¶
 			else {
 				ListItem* newListItem = myMalloc(sizeof(ListItem));
 
@@ -212,18 +219,18 @@ void addProcessToReadyList(PCB_t * newPcb)
 
 				SET_priorityValue(newListItem, newPcb->processPriority);
 
-				InsertItemIntoProcessList(newListItem, ProcessReadyList[prority]);
+				InsertItemIntoProcessList(newListItem,ProcessReadyList[prority]);
 
 				//newListItem->PCB_block.status = READY;
 				if (newPcb->processPriority >= TopPriorityReadyProcess) {
 					TopPriorityReadyProcess = newPcb->processPriority;
-
+					
 				}
 				//printf("%d %d", newPcb->processPriority, TopPriorityReadyProcess);
 				CurrentProcessNumer++;
 			}
 		}
-		//ËøõÁ®ãÊï∞Èáè‰∏ç‰∏∫Èõ∂
+		//Ω¯≥Ã ˝¡ø≤ªŒ™¡„
 		else {
 
 			ListItem* newListItem = myMalloc(sizeof(ListItem));
@@ -246,26 +253,27 @@ void addProcessToReadyList(PCB_t * newPcb)
 			CurrentProcessNumer++;
 		}
 	}
-	//ËøõÁ®ãÊåáÈíà‰∏ç‰∏∫Á©∫
+	//Ω¯≥Ã÷∏’Î≤ªŒ™ø’
 	else {
-		//Ë∞ÉÂ∫¶Âô®Ê≤°ÊúâÊâßË°å
-		if (schdulerStatus == SCHEDULER_STOP) {
-			//Êñ∞Âª∫ÁöÑËøõÁ®ã‰ºòÂÖàÁ∫ßÊØîÂΩìÂâçËøõÁ®ã‰ºòÂÖàÁ∫ßÈ´ò
-			//ÂàáÊç¢Êñ∞Âª∫ËøõÁ®ã‰∏∫ÂΩìÂâçËøõÁ®ã
+		//µ˜∂»∆˜√ª”–÷¥––
+		if (schdulerStatus ==SCHEDULER_STOP) {
+			//–¬Ω®µƒΩ¯≥Ã”≈œ»º∂±»µ±«∞Ω¯≥Ã”≈œ»º∂∏ﬂ
+		    //«–ªª–¬Ω®Ω¯≥ÃŒ™µ±«∞Ω¯≥Ã
 			if (newPcb->processPriority >= CurrentPCB_pointer->processPriority) {
 				TopPriorityReadyProcess = newPcb->processPriority;
+				CurrentPCB_pointer->status = READY;
 				CurrentPCB_pointer = newPcb;
 			}
 			//printf("%d %d", newPcb->processPriority, TopPriorityReadyProcess);
 		}
 		else {
 			if (newPcb->processPriority >= CurrentPCB_pointer->processPriority) {
-				//ÊâìÊñ≠Ë∞ÉÂ∫¶Âô®ÔºåÂàáÊç¢‰ªªÂä°ËøõÁ®ã
+				//¥Ú∂œµ˜∂»∆˜£¨«–ªª»ŒŒÒΩ¯≥Ã
 				schedulerStopAll();
 				TopPriorityReadyProcess = newPcb->processPriority;
+				CurrentPCB_pointer->status = READY;
 				CurrentPCB_pointer = newPcb;
-				//TODO
-				//TASKYIELDÂáΩÊï∞ÂÆûÁé∞
+			
 				schedulerResume();
 
 			}
@@ -290,13 +298,13 @@ void addProcessToReadyList(PCB_t * newPcb)
 
 int DeleteProcess(PCB * pcb)
 {
-	PCB* pcbToDelete = pcb;
-
+	PCB* pcbToDelete=pcb;
+	
 	ListItem* hostItemOfpcbToDelete = pcbToDelete->hostItem;
 	int preNumber = hostItemOfpcbToDelete->hostList->numberOfProcesses;
 	int result = 0;
-	//Â¶ÇÊûúË¶ÅÂà†Èô§ÁöÑËøõÁ®ãÊòØÂΩìÂâçËøõÁ®ã
-	//Â∞ÜÂΩìÂâçÂàóË°®ÊåáÈíàÊåáÂêëÂàóË°®È°πÁöÑ‰∏ã‰∏Ä‰∏™
+	//»Áπ˚“™…æ≥˝µƒΩ¯≥Ã «µ±«∞Ω¯≥Ã
+	//Ω´µ±«∞¡–±Ì÷∏’Î÷∏œÚ¡–±ÌœÓµƒœ¬“ª∏ˆ
 	if (pcbToDelete == CurrentPCB_pointer) {
 		if (pcbToDelete->hostItem->hostList->numberOfProcesses == 1) {
 			CurrentPCB_pointer = NULL;
@@ -310,17 +318,18 @@ int DeleteProcess(PCB * pcb)
 		CurrentProcessNumer--;
 	}
 
-	if (DeleteFromList(hostItemOfpcbToDelete) != (preNumber - 1)) {
-		printf("ËøõÁ®ãÂà†Èô§Â§±Ë¥•\n");
+	if ( DeleteFromList(hostItemOfpcbToDelete)!=(preNumber-1)) {
+		printf("Ω¯≥Ã…æ≥˝ ß∞‹\n");
 		result = 0;
 	}
 	else {
 		if (0 == deletePcbFromStack(pcb->IDofPCB)) {
-			printf("Â†ÜÊ†àÊ∏ÖÈô§Â§±Ë¥•\n");
+			printf("∂—’ª«Â≥˝ ß∞‹\n");
 			return 0;
 		}
-
-
+		
+		
+		
 		result = 1;
 		myFree(pcb);
 	}
@@ -328,17 +337,64 @@ int DeleteProcess(PCB * pcb)
 	return result;
 }
 
+int BlockedProcess(int pcbID)
+{
+	//’“µΩ“™◊Ë»˚µƒPCB
+	PCB_t*pcbToBlock = findPCB_ById(pcbID);
+	//∂‘”¶µƒ”≈œ»º∂
+	int prority = pcbToBlock->processPriority;
+	
+	if (0 == ProcessReadyList[prority]->numberOfProcesses) {
+		//printf("Ω¯≥Ã“—æ≠ÕÀ≥ˆ£°\n");
+		return 0;
+	}
+
+	//ListItem* ItemOfRemoveToBlockList = pcbToBlock->hostItem;
+	//printf("øÿ÷∆øÈ”≈œ»º∂£∫%d,¡–±ÌœÓ”≈œ»º∂:%d",pcbToBlock->processPriority,ItemOfRemoveToBlockList->priorityValue);
+	/*printf("Ω¯≥Ã ˝¡ø£∫%d",ItemOfRemoveToBlockList->hostList->numberOfProcesses);*/
+	//ENTER_CRITICAL();
+	else{
+		DeleteFromList(pcbToBlock->hostItem);
+		InsertItemIntoProcessList(pcbToBlock->hostItem,ProcessBlockingList);
+		blocking_signal = 1;
+		pcbToBlock->status = BLOCKING;
+
+		
+		
+		return 1;
+	}
+	//EXIT_CRITICAL();
+	
+}
+
+int WakeupProcess(int pcbID)
+{
+	//’“µΩ“™ªΩ–—µƒPCB
+	PCB_t*pcbToReady = findPCB_ById(pcbID);
+	int prority = pcbToReady->processPriority;
+	//’“µΩœ‡”¶µƒ¡–±ÌœÓ
+	//ListItem* ItemOfRemoveToReadList = pcbToReady->hostItem;
+	//ENTER_CRITICAL();
+	{
+		DeleteFromList(pcbToReady->hostItem);
+		InsertItemIntoProcessList(pcbToReady->hostItem, ProcessReadyList[prority]);
+		pcbToReady->status = READY;
+	}
+	//EXIT_CRITICAL();
+	return 1;
+}
+
 void schedulerStopAll(void)
 {
-	//Á≠âÂæÖ‰∏≠Êñ≠‰ø°Âè∑ÈáèÔºåÁõ∏ÂΩì‰∫éÂÖ≥‰∏≠Êñ≠
+	//µ»¥˝÷–∂œ–≈∫≈¡ø£¨œ‡µ±”⁄πÿ÷–∂œ
 	//WaitForSingleObject(timeInterruptMutex, INFINITE);
-
-
+	WaitForSingleObject(modifyListMutex,INFINITE);
+	
 }
 
 void schedulerResume(void)
 {
-
+	ReleaseMutex(modifyListMutex);
 }
 
 
@@ -361,7 +417,7 @@ void myFree(void*pointer) {
 		free(pointer);
 		(void)schedulerResume();
 	}
-
+	
 }
 
 
@@ -376,57 +432,59 @@ void processSwitchContext()
 	}
 }
 
-//ËøõÁ®ãÂ§ÑÁêÜÂáΩÊï∞(ÊâßË°åËøõÁ®ãÂáΩÊï∞)
+//Ω¯≥Ã¥¶¿Ì∫Ø ˝(÷¥––Ω¯≥Ã∫Ø ˝)
 DWORD WINAPI processThreadFun(LPVOID param)
 {
-	for (;;) {
-
+	
+		
 		FindTopProrityProcess();
-		printf("Áé∞Âú®ÊúÄÈ´òÁöÑ‰ºòÂÖàÁ∫ßÔºö%d\n", TopPriorityReadyProcess);
-		printf("Áé∞Âú®ÊâßË°åÁöÑËøõÁ®ãidÔºö%d\n", CurrentPCB_pointer->IDofPCB);
-		int*value = NULL;
-
+		//printf("œ÷‘⁄◊Ó∏ﬂµƒ”≈œ»º∂£∫%d\n",TopPriorityReadyProcess);
+		//printf("œ÷‘⁄÷¥––µƒΩ¯≥Ã£∫%s\n", CurrentPCB_pointer->PCBname);
+		int*value=NULL;
+		
 		//PCB_t*current = CurrentPCB_pointer;
-
+		
 		value = (int*)findFunValueByPcbID(CurrentPCB_pointer->IDofPCB);
-		//printf("ÊâæÂà∞ÁöÑÂÄºÔºö%d\n",value);
-		//printf("ËøõÁ®ãÔºö%d\n",CurrentPCB_pointer->IDofPCB);
-		//ÊâßË°åËøõÁ®ãÁöÑÂáΩÊï∞
-		//ÔºÅÔºÅÔºÅÊÉ≥Ë¶ÅËÆ∞ÂΩïËøõÁ®ãÂáΩÊï∞ÁöÑÂÄº ÈúÄË¶ÅÂú®ËøõÁ®ãÂáΩÊï∞ÁöÑÂÜÖÈÉ®Âú®Ê®°ÊãüÁöÑÂ†ÜÊ†à‰∏≠ËÆ∞ÂΩï(Âõ†‰∏∫Âú®ËøõÁ®ãÂ∑•‰ΩúÂáΩÊï∞ÊòØÊ≤°ÊúâËøîÂõûÂÄºÁöÑ)
+		//printf("’“µΩµƒ÷µ£∫%d\n",value);
+		//printf("Ω¯≥Ã£∫%d\n",CurrentPCB_pointer->IDofPCB);
+		//÷¥––Ω¯≥Ãµƒ∫Ø ˝
+		//£°£°£°œÎ“™º«¬ºΩ¯≥Ã∫Ø ˝µƒ÷µ –Ë“™‘⁄Ω¯≥Ã∫Ø ˝µƒƒ⁄≤ø‘⁄ƒ£ƒ‚µƒ∂—’ª÷–º«¬º(“ÚŒ™‘⁄Ω¯≥Ãπ§◊˜∫Ø ˝ «√ª”–∑µªÿ÷µµƒ)
 		CurrentPCB_pointer->status = RUNNING;
-		(CurrentPCB_pointer->function)(value);
-
-	}
+	    (CurrentPCB_pointer->function)(value);
+		
+	
 }
 
 void startScheduler()
 {
-
-	//ÂàõÂª∫‰∏Ä‰∏™ËøõÁ®ã Ê®°ÊãüË∞ÉÂ∫¶Âô®
+	
+	//¥¥Ω®“ª∏ˆΩ¯≥Ã ƒ£ƒ‚µ˜∂»∆˜
 	processThread = CreateThread(NULL, 0, processThreadFun, NULL, 0, NULL);
-
+	
 	for (;;) {
-		WaitForSingleObject(INTERRUPTION, INFINITE);
+		WaitForSingleObject(INTERRUPTION,INFINITE);
 		//WaitForSingleObject(toKillProcessThread,INFINITE);
 
-
-		if (exit_signal == 1) {
-			printf("Ë¶ÅÂà†Èô§ÁöÑËøõÁ®ãÔºö%s\n", (*processExitBuf)->pcb->PCBname);
+		
+		if (exit_signal == TRUE) {
+			
+			//printf("“™…æ≥˝µƒΩ¯≥Ã£∫%s\n",(*processExitBuf)->pcb->PCBname);
 			DeleteProcess((*processExitBuf)->pcb);
+			
 			//OSstackSimulatorItem*iter = (*STATIC_OS_STACK)->startSimulatorItem->next;
 			//ListItem*item = ProcessReadyList[6]->lastItem->next;
 			//for (int i = 0;; i++) {
 			//	if (iter == ProcessReadyList[6]->lastItem) {
 			//		break;
 			//	}
-			//	//printf("Âú®ÂàóË°®‰∏≠ÁöÑËøõÁ®ãÂêçÁß∞:%s\n", ((PCB*)item->PCB_block)->PCBname);
-			//	printf("ËøõÁ®ãÂáΩÊï∞ÂÄºÊòØÂê¶‰∏∫Á©∫:%s\n",iter->functionValue==NULL);
+			//	//printf("‘⁄¡–±Ì÷–µƒΩ¯≥Ã√˚≥∆:%s\n", ((PCB*)item->PCB_block)->PCBname);
+			//	printf("Ω¯≥Ã∫Ø ˝÷µ «∑ÒŒ™ø’:%s\n",iter->functionValue==NULL);
 			//	iter = iter->next;
 			//	
-
+			
 			//FindTopProrityProcess();
-
-			exit_signal = 0;
+	
+			exit_signal = FALSE;
 		}
 		TerminateThread(processThread, 0);
 		//ReleaseMutex(modifyListMutex);
@@ -434,14 +492,28 @@ void startScheduler()
 		if (CurrentPCB_pointer != NULL) {
 			CurrentPCB_pointer->status = READY;
 		}
-		processThread = CreateThread(NULL, 0, processThreadFun, NULL, 0, NULL);
+		if (blocking_signal = 1&&CurrentPCB_pointer!=NULL) {
+			CurrentPCB_pointer->status = BLOCKING;
+			blocking_signal = 0;
+		}
+		processThread=CreateThread(NULL, 0, processThreadFun, NULL, 0, NULL);
 
 	}
 }
 
 void runInFreeTime(void*a) {
 	while (1) {
-		Sleep(tickTime / 2);
-		printf("Á≥ªÁªüÂΩìÂâçÁ©∫Èó≤\n");
+		Sleep(tickTime/2);
+		//printf("œµÕ≥µ±«∞ø’œ–\n");
+		
 	}
 }
+
+int listIsEmpty(ProcessList * list)
+{
+	if (list->numberOfProcesses == 0) return 1;
+	else return 0;
+}
+
+
+

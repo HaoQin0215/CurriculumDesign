@@ -1,49 +1,54 @@
-ï»¿#include<stdint.h>
-
+#include<stdint.h>
 #include"pcbUtil.h"
 #include"ticks.h"
-
 #define GET_PCB_STATUS(pcb) (pcb->status)
+//×èÈû½ø³ÌµÄÐÅºÅ
+int blocking_signal;
 
-//è¿›ç¨‹å·¥ä½œå‡½æ•°
+//½ø³Ì¹¤×÷º¯Êý
 DWORD WINAPI processThreadFun(LPVOID param);
 
-int initStaticLists();
+	int initStaticLists();
 
-void freeStaticLists();
+	void freeStaticLists();
 
-int CreateNewProcess(ProcessFunction_t function,
-	const char* const name, const unsigned int stackLength,
-	void* const parameters, unsigned int prority,
-	PCB** pcb, time_t runTime);
+	int CreateNewProcess(ProcessFunction_t function,
+		const char* const name, const unsigned int stackLength,
+		void* const parameters, unsigned int prority,
+		PCB** pcb,time_t runTime);
 
-void InitialNewProcess(ProcessFunction_t function, const char* const name, const unsigned int stackLength,
-	void* const parameters, unsigned int prority, PCB*pcb, time_t runTime);
+	void InitialNewProcess(ProcessFunction_t function, const char* const name, const unsigned int stackLength,
+		void* const parameters, unsigned int prority, PCB*pcb,time_t runTime);
 
-void addProcessToReadyList(PCB_t*newPcb);
+	void addProcessToReadyList(PCB_t*newPcb);
 
-int DeleteProcess(PCB* pcb);
-int BlockedProcess();
-int WakeupProcess();
+	int DeleteProcess(PCB* pcb);
 
-void schedulerStopAll(void);
-void schedulerResume(void);
+	int BlockedProcess(int pcbID);
+	int WakeupProcess(int pcbID);
 
-void* myMalloc(size_t newSize);
+	void schedulerStopAll(void);
+	void schedulerResume(void);
 
-void myFree(void*pointer);
+	void* myMalloc(size_t newSize);
 
+	void myFree(void*pointer);
 
-void processSwitchContext();
+	
 
-void startScheduler();
+	void processSwitchContext();
 
-void listChangeListItemWithTime(ProcessList*list);
+	void startScheduler();
 
-void  FindTopProrityProcess();
+	void listChangeListItemWithTime(ProcessList*list);
 
-void proSELECT_HIGHEST_PRIORITY_PROCESS();
+	void  FindTopProrityProcess();
 
-//void changeProcessUnderInterruption(PCB_t*pcb);
+	void proSELECT_HIGHEST_PRIORITY_PROCESS();
 
-void runInFreeTime(void*a);
+	//void changeProcessUnderInterruption(PCB_t*pcb);
+
+	void runInFreeTime(void*a);
+
+	
+	int listIsEmpty(ProcessList*list);

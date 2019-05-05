@@ -1,9 +1,7 @@
-ï»¿#pragma once
-
-#include"list.h"
-
+#pragma once
 #define MAX_NAME_LENGTH 20
-#define MAX_PROCESS_PRIORITY 30
+#define MAX_PROCESS_PRIORITY 35
+#include"list.h"
 
 #define FALSE ((long)0)
 #define TRUE ((long)1)
@@ -16,7 +14,6 @@ typedef enum {
 	SCHEDULER_RUNNING = 1,
 	SCHEDULER_STOP = 0
 }SCHEDULER_STATUS;
-
 typedef enum {
 	BLOCKING = 0,
 	SUSPEND,
@@ -25,8 +22,8 @@ typedef enum {
 	DELETED
 }PCB_STATUS;
 
-//å®šä¹‰ä¸€ä¸ªè¿”å›å€¼ä¸ºç©ºçš„å‡½æ•°æŒ‡é’ˆ 
-//ç”¨äºæè¿°è¿›ç¨‹å‡½æ•°
+//¶¨ÒåÒ»¸ö·µ»ØÖµÎª¿ÕµÄº¯ÊıÖ¸Õë 
+//ÓÃÓÚÃèÊö½ø³Ìº¯Êı
 typedef void(*ProcessFunction_t)(void*);
 
 typedef struct PCB_ADDRESSofMEMORY {
@@ -37,63 +34,68 @@ typedef struct PCB_ADDRESSofMEMORY {
 
 typedef struct ProcessControllBlock {
 	volatile PCB_ADDRESSofMEMORY stackAddress;
-	//æŒ‡å‘çš„çˆ¶åˆ—è¡¨é¡¹
+	//Ö¸ÏòµÄ¸¸ÁĞ±íÏî
 	ListItem *hostItem;
-	//è¿›ç¨‹è¿è¡Œæ—¶é—´
+	//½ø³ÌÔËĞĞÊ±¼ä
 	clock_t runTime;
-	//è¿›ç¨‹åç§°
-	char* PCBname[MAX_NAME_LENGTH];
-	//è¿›ç¨‹ä¼˜å…ˆçº§
+	//½ø³ÌÃû³Æ
+	char PCBname[MAX_NAME_LENGTH];
+	//½ø³ÌÓÅÏÈ¼¶
 	unsigned int processPriority;
-	//è¿›ç¨‹çŠ¶æ€
+	//½ø³Ì×´Ì¬
 	PCB_STATUS status;
-	//è¿›ç¨‹id
+	//½ø³Ìid
 	unsigned int IDofPCB;
-	//è¿›ç¨‹å‡½æ•°
+	//½ø³Ìº¯Êı
 	ProcessFunction_t function;
-	//è¿›ç¨‹åœ¨å †æ ˆä¸­çš„ä½ç½®
+	//½ø³ÌÔÚ¶ÑÕ»ÖĞµÄÎ»ÖÃ
 	int stackPosition;
 }PCB;
-
 typedef PCB PCB_t;
-
+//½ø³Ì½áÊøµÄ´æ´¢Ìå
 typedef struct EXIT_PROCESS {
 	PCB_t*pcb;
 }EXIT_PROCESS;
 
 
-//æ­£åœ¨å¤„ç†çš„è¿›ç¨‹
+
+
+//ÕıÔÚ´¦ÀíµÄ½ø³Ì
 PCB_t* volatile CurrentPCB_pointer;
 
-//å…¨å±€å°±ç»ªåˆ—è¡¨
+//È«¾Ö¾ÍĞ÷ÁĞ±í
 ProcessList* ProcessReadyList[MAX_PROCESS_PRIORITY];
-//å…¨å±€é˜»å¡åˆ—è¡¨
+//È«¾Ö×èÈûÁĞ±í
 ProcessList* ProcessBlockingList;
-//å…¨å±€åˆ é™¤åˆ—è¡¨
+//È«¾ÖÉ¾³ıÁĞ±í
 ProcessList* ProcessDeleteList;
-//æ‰©å±•å°±ç»ªé˜Ÿåˆ—
+//À©Õ¹¾ÍĞ÷¶ÓÁĞ
 ProcessList* ProcessPendingList;
-//å»¶æ—¶åˆ—è¡¨1
+//ÑÓÊ±ÁĞ±í1
 ProcessList* DelayedList1;
-//å»¶æ—¶åˆ—è¡¨2
+//ÑÓÊ±ÁĞ±í2
 ProcessList* DelayedList2;
-//å»¶æ—¶åˆ—è¡¨
+//ÑÓÊ±ÁĞ±í
 ProcessList* volatile DelayedList;
-//æº¢å‡ºå»¶æ—¶åˆ—è¡¨ï¼Œè®¡æ•°å™¨æº¢å‡ºæ—¶äº¤æ¢ä¸¤ä¸ªå»¶æ—¶åˆ—è¡¨è¿›è¡Œé‡ç½®
+//Òç³öÑÓÊ±ÁĞ±í£¬¼ÆÊıÆ÷Òç³öÊ±½»»»Á½¸öÑÓÊ±ÁĞ±í½øĞĞÖØÖÃ
 ProcessList* volatile OverFlowDelayedList;
 
 
-//ç³»ç»Ÿå…³é”®è®°å½•
-//è¿è¡Œçš„è¿›ç¨‹æ•°é‡
-//!!!!!!ä¸€å®šè¦è®°å¾—åˆå§‹åŒ–!!!!!
+//ÏµÍ³¹Ø¼ü¼ÇÂ¼
+//ÔËĞĞµÄ½ø³ÌÊıÁ¿
+//!!!!!!Ò»¶¨Òª¼ÇµÃ³õÊ¼»¯!!!!!
 int CurrentProcessNumer;
-//æœ€é«˜ä¼˜å…ˆçº§çš„è¿›ç¨‹
+//×î¸ßÓÅÏÈ¼¶µÄ½ø³Ì
 unsigned int TopPriorityReadyProcess;
-//è°ƒåº¦å™¨çš„è¿çŠ¶æ€
-SCHEDULER_STATUS schdulerStatus;
-//æ˜¯å¦èƒ½å¤Ÿè¿›è¡Œä»»åŠ¡åˆ‡æ¢
-static long xYieldPending = 0;
-//è¿›ç¨‹é€€å‡ºçš„ä¿¡å·
-int exit_signal;
+//µ÷¶ÈÆ÷µÄÔË×´Ì¬
+ SCHEDULER_STATUS schdulerStatus;
+//ÊÇ·ñÄÜ¹»½øĞĞÈÎÎñÇĞ»»
+static long xYieldPending  = 0;
+//½ø³ÌÍË³öµÄĞÅºÅ
+int exit_signal ;
 
 EXIT_PROCESS **processExitBuf;
+
+
+
+
