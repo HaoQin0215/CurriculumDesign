@@ -77,7 +77,7 @@ DWORD WINAPI displayFun(LPVOID param) {
 		scanf_s("%d", &choice);
 		switch (choice) {
 		case 0:
-			break;
+			exit(0);
 		case 1:
 			printf("|-------------------------------------------创建进程------------------------------------------------|\n");
 			printf("|进程名称：");

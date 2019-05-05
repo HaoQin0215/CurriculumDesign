@@ -9,4 +9,20 @@ d:\c++_code\curriculumdesign\curriculumdesign\entryblock.c(14): warning C4047: �
 d:\c++_code\curriculumdesign\curriculumdesign\entryblock.c(92): warning C4312: “类型强制转换”: 从“int”转换到更大的“int *”
 d:\c++_code\curriculumdesign\curriculumdesign\entryblock.c(137): warning C4477: “printf”: 格式字符串“%d”需要类型“int”的参数，但可变参数 6 拥有了类型“void *”
 d:\c++_code\curriculumdesign\curriculumdesign\entryblock.c(137): warning C4313: “printf”: 格式字符串中的“%d”与“void *”类型的参数 6 冲突
-  CurriculumDesign.vcxproj -> D:\c++_code\CurriculumDesign\x64\Debug\CurriculumDesign.exe
+  list.c
+  process.c
+d:\c++_code\curriculumdesign\curriculumdesign\process.c(189): warning C4244: “=”: 从“time_t”转换到“clock_t”，可能丢失数据
+  stackSimulator.c
+d:\c++_code\curriculumdesign\curriculumdesign\stacksimulator.c(73): warning C4047: “=”:“void *volatile ”与“int”的间接级别不同
+  ticks.c
+  process.h
+x64\Release\process.obj : warning LNK4042: 对象被多次指定；已忽略多余的指定
+entryBlock.obj : error LNK2001: 无法解析的外部符号 freeStaticLists
+entryBlock.obj : error LNK2001: 无法解析的外部符号 BlockedProcess
+entryBlock.obj : error LNK2001: 无法解析的外部符号 CreateNewProcess
+entryBlock.obj : error LNK2001: 无法解析的外部符号 WakeupProcess
+entryBlock.obj : error LNK2001: 无法解析的外部符号 initStaticLists
+entryBlock.obj : error LNK2001: 无法解析的外部符号 runInFreeTime
+entryBlock.obj : error LNK2001: 无法解析的外部符号 startScheduler
+entryBlock.obj : error LNK2001: 无法解析的外部符号 DeleteProcess
+D:\c++_code\CurriculumDesign\x64\Release\CurriculumDesign.exe : fatal error LNK1120: 8 个无法解析的外部命令
