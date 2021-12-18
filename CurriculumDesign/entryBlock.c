@@ -22,9 +22,7 @@ void test(void*a) {
 		if (placeOfValue != NULL ) {
 			ENTER_CRITICAL();
 			{
-
 				placeOfValue->functionValue = count;
-
 				//printf("更新完成\n");
 				//printf("%d\n",(*STATIC_OS_STACK)->startSimulatorItem->next->functionValue);
 			}
@@ -33,9 +31,7 @@ void test(void*a) {
 			clock_t end = clock() - start;
 			placeOfValue->pcb->runTime -= end;
 			if (placeOfValue->pcb->runTime < 0) {
-
 				(*processExitBuf)->pcb = placeOfValue->pcb;
-
 				exit_signal = TRUE;
 				return;
 			}
@@ -45,7 +41,6 @@ void test(void*a) {
 }
 
 void test1(void*a) {
-
 	while (1) {
 		Sleep(200);
 		printf("process2 is running...\n");
@@ -127,9 +122,7 @@ DWORD WINAPI displayFun(LPVOID param) {
 	}
 }
 void printInformation() {
-
 	OSstackSimulatorItem*iter = (*STATIC_OS_STACK)->startSimulatorItem;
-
 	while(1){
 		iter = iter->next;
 			if (iter== (*STATIC_OS_STACK)->startSimulatorItem) break;
@@ -143,20 +136,17 @@ void printInformation() {
 }
 
 int main() {
-	
-
 	//完成一些初始化
 	initOSstackSimulator();
 	initStaticLists();
 	initSemphores();
 	exit_signal = FALSE;
 	blocking_signal = 0;
-	processExitBuf =malloc(sizeof(EXIT_PROCESS));
 
+	processExitBuf =malloc(sizeof(EXIT_PROCESS));
 	(*processExitBuf) = (EXIT_PROCESS*)malloc(sizeof(EXIT_PROCESS));
 	CurrentProcessNumer = 0;
 	TopPriorityReadyProcess = 30;
-
 
 	PCB_t **freeProcess = malloc(sizeof(PCB));
 	char name3[MAX_NAME_LENGTH] = "FreeProcess";
@@ -178,15 +168,9 @@ int main() {
 	//char name[MAX_NAME_LENGTH] = "P1";
 
 	//CreateNewProcess(test, name, 1, (int*)4, 3, pcb, MAX_RUN_TIME);
-
-
-
-	
 	CreateTimer();
 	HANDLE display = CreateThread(NULL, 0, displayFun, NULL, 0, NULL);
 	startScheduler();
-	
-
 
 	free(*processExitBuf);
 	free(processExitBuf);

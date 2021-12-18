@@ -21,17 +21,12 @@ typedef struct OSstack {
 
 //全局堆栈表头
 OSstack **STATIC_OS_STACK;
-
 int initOSstackSimulator();
-
 int addPcbToStack(PCB_t* newPcb,void*param);
-
 int deletePcbFromStack(int idOfPcb);
 
 PCB_t* findPCB_ById(int id);
-
 void*findFunValueByPcbID(int id);
-
 OSstackSimulatorItem*findRunningItem();
 
 

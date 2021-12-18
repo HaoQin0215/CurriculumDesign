@@ -5,34 +5,24 @@
 //用于挂起调度器的变量
 static volatile long SchedulerSuspended = (long)FALSE;
 
-void  FindTopProrityProcess()
-{ 
-	unsigned int topProrityProcess = MAX_PROCESS_PRIORITY-1;
-	
-	
+void  FindTopProrityProcess(){ 
+	unsigned int topProrityProcess = MAX_PROCESS_PRIORITY - 1;
 	while (listIsEmpty(ProcessReadyList[topProrityProcess])) {
-			
 			--topProrityProcess;
 		}
 	//printf("当前最高优先级：%d\n", topProrityProcess);
-		listChangeListItemWithTime(ProcessReadyList[topProrityProcess]);
-	
+	listChangeListItemWithTime(ProcessReadyList[topProrityProcess]);
 	TopPriorityReadyProcess = topProrityProcess;
 }
 
-void proSELECT_HIGHEST_PRIORITY_PROCESS()
-{
+void proSELECT_HIGHEST_PRIORITY_PROCESS(){
 	unsigned int uxTopPriority=TopPriorityReadyProcess;
 	FindTopProrityProcess();
 	listChangeListItemWithTime(ProcessReadyList[ uxTopPriority ] );
 }
 
-
-
-
 //时间片到时切换列表项
-void listChangeListItemWithTime(ProcessList * list)
-{
+void listChangeListItemWithTime(ProcessList * list){
 	ProcessList* ConstList = (list);
 	//printf("切换之前的进程id：%d\n", CurrentPCB_pointer->IDofPCB);
 	ConstList->ListItemIndex = ConstList->ListItemIndex->next;
@@ -43,58 +33,35 @@ void listChangeListItemWithTime(ProcessList * list)
 	//printf("现在执行的进程id：%d\n", CurrentPCB_pointer->IDofPCB);
 }
 
-int initStaticLists()
-{
+int initStaticLists(){
 
 	int result = 1;
 	ListItem* ProcessReadyListLastItem[MAX_PROCESS_PRIORITY];
-
 	ListItem* ProcessBlockingListLastItem= (ListItem*)malloc(sizeof(ListItem));
-
 	ListItem* ProcessDeleteListLastItem= (ListItem*)malloc(sizeof(ListItem));
-
+	//初始化优先级链表
 	for (int i = 0; i < MAX_PROCESS_PRIORITY; i++) {
-
 		ProcessReadyList[i] = (ProcessList*)malloc(sizeof(ProcessList));
-
 		ProcessReadyListLastItem[i] = (ListItem*)malloc(sizeof(ListItem));
-
 		InitListItem(ProcessReadyListLastItem[i]);
-
 		ProcessReadyList[i]->lastItem = ProcessReadyListLastItem[i];
-
 		InitProcessList(ProcessReadyList[i]);
-
 		SET_LIST_STATE(ProcessReadyList[i], LISTReady);
 	}
+	//初始化阻塞链表
 	ProcessBlockingList = (ProcessList*)malloc(sizeof(ProcessList));
-
 	InitListItem(ProcessBlockingListLastItem);
-
 	ProcessBlockingList->lastItem = ProcessBlockingListLastItem;
-
 	InitProcessList(ProcessBlockingList);
-
-
 	SET_LIST_STATE(ProcessBlockingList,LISTBlocking);
-
-
 	ProcessDeleteList = (ProcessList*)malloc(sizeof(ProcessList));
-
 	InitListItem(ProcessDeleteListLastItem);
-
 	ProcessDeleteList->lastItem = ProcessDeleteListLastItem;
-
 	InitProcessList(ProcessDeleteList);
-
 	SET_LIST_STATE(ProcessDeleteList,LISTDelete);
-
 	for (int i = 0; i < MAX_PROCESS_PRIORITY; i++) {
-
 		if (ProcessReadyList[i] == NULL) {
-
 			result = 0;
-
 		}
 	}
 	if (ProcessBlockingList == NULL || ProcessDeleteList == NULL || ProcessBlockingListLastItem==NULL
@@ -111,56 +78,48 @@ int initStaticLists()
 	return result;
 }
 
-void freeStaticLists()
-{
+void freeStaticLists(){
 	for (int i = 0; i < MAX_PROCESS_PRIORITY; i++) {
-
 		free(ProcessReadyList[i]);
 	}
-
 	free(ProcessBlockingList);
-
 	free(ProcessDeleteList);
 	
 }
 
-int CreateNewProcess(ProcessFunction_t function, const char * const name, const unsigned int stackLength,
-					void * const parameters,	 unsigned int prority, PCB**pcb,time_t runTime)
-{
+int CreateNewProcess(ProcessFunction_t function, 
+					const char * const name, 
+					const unsigned int stackLength,
+					void * const parameters,	 
+					unsigned int prority, 
+					PCB**pcb,time_t runTime){
 	PCB_t* newPCB;
 	int createResult;
-	
 	newPCB = myMalloc(sizeof(PCB_t));
 	if (newPCB != NULL) {
 		if (addPcbToStack(newPCB,parameters) == 0) {
 			myFree(newPCB);
-
 			newPCB = NULL;
 			createResult = 0;
 		}
 		else {
-
 			InitialNewProcess(function, name, stackLength, parameters, prority, newPCB,runTime);
-
 			addProcessToReadyList(newPCB);
-			
-
 			newPCB->status = READY;
-
 			createResult = 1;
-
 		}
-		
 	}
-	
 	*pcb = newPCB;
-
 	return createResult;
 }
 
-void InitialNewProcess(ProcessFunction_t function, const char * const name, 
-	const unsigned int stackLength, void * const parameters, unsigned int prority, PCB * pcb,time_t runTime)
-{
+void InitialNewProcess(ProcessFunction_t function, 
+						const char * const name, 
+						const unsigned int stackLength, 
+						void * const parameters, 
+						unsigned int prority, 
+						PCB * pcb,
+						time_t runTime){
 
 	pcb->function = function;
 	/*for (int i = 0; i != '\0'; i++) {
@@ -172,7 +131,6 @@ void InitialNewProcess(ProcessFunction_t function, const char * const name,
 	}
 	pcb->PCBname[MAX_NAME_LENGTH - 1] = '\0';*/
 	strcpy_s(pcb->PCBname, MAX_NAME_LENGTH,name);
-
 	pcb->stackAddress.length = stackLength;
 
 	if (prority >= MAX_PROCESS_PRIORITY||prority<0) {
@@ -192,9 +150,7 @@ void InitialNewProcess(ProcessFunction_t function, const char * const name,
 
 
 
-void addProcessToReadyList(PCB_t * newPcb)
-{
-
+void addProcessToReadyList(PCB_t * newPcb){
 	int prority = newPcb->processPriority;
 	//当前进程指针是否为空
 	if (CurrentPCB_pointer == NULL) {
@@ -210,21 +166,16 @@ void addProcessToReadyList(PCB_t * newPcb)
 			//初始化成功
 			else {
 				ListItem* newListItem = myMalloc(sizeof(ListItem));
-
+				//初始化链表项
 				InitListItem(newListItem);
-
 				newListItem->PCB_block = newPcb;
-
 				newPcb->hostItem = newListItem;
 
 				SET_priorityValue(newListItem, newPcb->processPriority);
-
 				InsertItemIntoProcessList(newListItem,ProcessReadyList[prority]);
-
 				//newListItem->PCB_block.status = READY;
 				if (newPcb->processPriority >= TopPriorityReadyProcess) {
 					TopPriorityReadyProcess = newPcb->processPriority;
-					
 				}
 				//printf("%d %d", newPcb->processPriority, TopPriorityReadyProcess);
 				CurrentProcessNumer++;
@@ -232,19 +183,13 @@ void addProcessToReadyList(PCB_t * newPcb)
 		}
 		//进程数量不为零
 		else {
-
 			ListItem* newListItem = myMalloc(sizeof(ListItem));
-
 			InitListItem(newListItem);
-
 			newListItem->PCB_block = newPcb;
-
 			newPcb->hostItem = newListItem;
 
 			SET_priorityValue(newListItem, newPcb->processPriority);
-
 			InsertItemIntoProcessList(newListItem, ProcessReadyList[prority]);
-
 			//newListItem->PCB_block.status = READY;
 			if ((newPcb->processPriority) >= TopPriorityReadyProcess) {
 				TopPriorityReadyProcess = newPcb->processPriority;
@@ -273,33 +218,23 @@ void addProcessToReadyList(PCB_t * newPcb)
 				TopPriorityReadyProcess = newPcb->processPriority;
 				CurrentPCB_pointer->status = READY;
 				CurrentPCB_pointer = newPcb;
-			
 				schedulerResume();
-
 			}
 		}
 
 		ListItem* newListItem = myMalloc(sizeof(ListItem));
-
 		InitListItem(newListItem);
-
 		newListItem->PCB_block = newPcb;
-
 		newPcb->hostItem = newListItem;
 
 		SET_priorityValue(newListItem, newPcb->processPriority);
-
 		InsertItemIntoProcessList(newListItem, ProcessReadyList[prority]);
-
 		CurrentProcessNumer++;
-
 	}
 }
 
-int DeleteProcess(PCB * pcb)
-{
+int DeleteProcess(PCB * pcb){
 	PCB* pcbToDelete=pcb;
-	
 	ListItem* hostItemOfpcbToDelete = pcbToDelete->hostItem;
 	int preNumber = hostItemOfpcbToDelete->hostList->numberOfProcesses;
 	int result = 0;
@@ -309,12 +244,12 @@ int DeleteProcess(PCB * pcb)
 		if (pcbToDelete->hostItem->hostList->numberOfProcesses == 1) {
 			CurrentPCB_pointer = NULL;
 		}
-		else {
+		else{
 			CurrentPCB_pointer = pcbToDelete->hostItem->hostList->lastItem->next->PCB_block;
 		}
 		CurrentProcessNumer--;
 	}
-	else {
+	else{
 		CurrentProcessNumer--;
 	}
 
@@ -327,28 +262,21 @@ int DeleteProcess(PCB * pcb)
 			printf("堆栈清除失败\n");
 			return 0;
 		}
-		
-		
-		
 		result = 1;
 		myFree(pcb);
 	}
-
 	return result;
 }
 
-int BlockedProcess(int pcbID)
-{
+int BlockedProcess(int pcbID){
 	//找到要阻塞的PCB
 	PCB_t*pcbToBlock = findPCB_ById(pcbID);
 	//对应的优先级
 	int prority = pcbToBlock->processPriority;
-	
 	if (0 == ProcessReadyList[prority]->numberOfProcesses) {
 		//printf("进程已经退出！\n");
 		return 0;
 	}
-
 	//ListItem* ItemOfRemoveToBlockList = pcbToBlock->hostItem;
 	//printf("控制块优先级：%d,列表项优先级:%d",pcbToBlock->processPriority,ItemOfRemoveToBlockList->priorityValue);
 	/*printf("进程数量：%d",ItemOfRemoveToBlockList->hostList->numberOfProcesses);*/
@@ -358,17 +286,13 @@ int BlockedProcess(int pcbID)
 		InsertItemIntoProcessList(pcbToBlock->hostItem,ProcessBlockingList);
 		blocking_signal = 1;
 		pcbToBlock->status = BLOCKING;
-
-		
-		
 		return 1;
 	}
 	//EXIT_CRITICAL();
 	
 }
 
-int WakeupProcess(int pcbID)
-{
+int WakeupProcess(int pcbID){
 	//找到要唤醒的PCB
 	PCB_t*pcbToReady = findPCB_ById(pcbID);
 	int prority = pcbToReady->processPriority;
@@ -384,30 +308,23 @@ int WakeupProcess(int pcbID)
 	return 1;
 }
 
-void schedulerStopAll(void)
-{
+void schedulerStopAll(void){
 	//等待中断信号量，相当于关中断
 	//WaitForSingleObject(timeInterruptMutex, INFINITE);
 	WaitForSingleObject(modifyListMutex,INFINITE);
 	
 }
 
-void schedulerResume(void)
-{
+void schedulerResume(void){
 	ReleaseMutex(modifyListMutex);
 }
 
 
-void * myMalloc(size_t newSize)
-{
+void * myMalloc(size_t newSize){
 	void*parameterOfReturn;
-
 	schedulerStopAll();
-
 	parameterOfReturn = malloc(newSize);
-
 	(void)schedulerResume();
-
 	return parameterOfReturn;
 }
 
@@ -417,12 +334,10 @@ void myFree(void*pointer) {
 		free(pointer);
 		(void)schedulerResume();
 	}
-	
 }
 
 
-void processSwitchContext()
-{
+void processSwitchContext(){
 	if (schdulerStatus != SCHEDULER_STOP) {
 		xYieldPending = TRUE;
 	}
@@ -433,17 +348,12 @@ void processSwitchContext()
 }
 
 //进程处理函数(执行进程函数)
-DWORD WINAPI processThreadFun(LPVOID param)
-{
-	
-		
+DWORD WINAPI processThreadFun(LPVOID param){
 		FindTopProrityProcess();
 		//printf("现在最高的优先级：%d\n",TopPriorityReadyProcess);
 		//printf("现在执行的进程：%s\n", CurrentPCB_pointer->PCBname);
 		int*value=NULL;
-		
 		//PCB_t*current = CurrentPCB_pointer;
-		
 		value = (int*)findFunValueByPcbID(CurrentPCB_pointer->IDofPCB);
 		//printf("找到的值：%d\n",value);
 		//printf("进程：%d\n",CurrentPCB_pointer->IDofPCB);
@@ -455,22 +365,15 @@ DWORD WINAPI processThreadFun(LPVOID param)
 	
 }
 
-void startScheduler()
-{
-	
+void startScheduler(){
 	//创建一个进程 模拟调度器
 	processThread = CreateThread(NULL, 0, processThreadFun, NULL, 0, NULL);
-	
 	for (;;) {
 		WaitForSingleObject(INTERRUPTION,INFINITE);
 		//WaitForSingleObject(toKillProcessThread,INFINITE);
-
-		
 		if (exit_signal == TRUE) {
-			
 			//printf("要删除的进程：%s\n",(*processExitBuf)->pcb->PCBname);
 			DeleteProcess((*processExitBuf)->pcb);
-			
 			//OSstackSimulatorItem*iter = (*STATIC_OS_STACK)->startSimulatorItem->next;
 			//ListItem*item = ProcessReadyList[6]->lastItem->next;
 			//for (int i = 0;; i++) {
@@ -481,15 +384,13 @@ void startScheduler()
 			//	printf("进程函数值是否为空:%s\n",iter->functionValue==NULL);
 			//	iter = iter->next;
 			//	
-			
 			//FindTopProrityProcess();
-	
 			exit_signal = FALSE;
 		}
 		TerminateThread(processThread, 0);
 		//ReleaseMutex(modifyListMutex);
 		//ReleaseMutex(timeInterruptMutex);
-		if (CurrentPCB_pointer != NULL) {
+		if(CurrentPCB_pointer != NULL) {
 			CurrentPCB_pointer->status = READY;
 		}
 		if (blocking_signal = 1&&CurrentPCB_pointer!=NULL) {
@@ -497,22 +398,23 @@ void startScheduler()
 			blocking_signal = 0;
 		}
 		processThread=CreateThread(NULL, 0, processThreadFun, NULL, 0, NULL);
-
 	}
 }
 
 void runInFreeTime(void*a) {
 	while (1) {
-		Sleep(tickTime/2);
+		Sleep(tickTime / 2);
 		//printf("系统当前空闲\n");
-		
 	}
 }
 
-int listIsEmpty(ProcessList * list)
-{
-	if (list->numberOfProcesses == 0) return 1;
-	else return 0;
+int listIsEmpty(ProcessList * list){
+	if (list->numberOfProcesses == 0){
+		return 1;
+	}
+	else{
+		return 0;
+	}
 }
 
 

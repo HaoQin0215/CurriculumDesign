@@ -9,11 +9,12 @@
 #define listSELECT_HIGHEST_PRIORITY_TACK() {\
 	listGET_OWNER_OF_NEXT_ENTRY(CurrentPCB_pointer, &ProcessReadyList[TopPriorityReadyProcess]);\
 }\
-
+//调度器状态
 typedef enum {
 	SCHEDULER_RUNNING = 1,
 	SCHEDULER_STOP = 0
 }SCHEDULER_STATUS;
+//进程状态
 typedef enum {
 	BLOCKING = 0,
 	SUSPEND,
@@ -58,11 +59,8 @@ typedef struct EXIT_PROCESS {
 }EXIT_PROCESS;
 
 
-
-
 //正在处理的进程
 PCB_t* volatile CurrentPCB_pointer;
-
 //全局就绪列表
 ProcessList* ProcessReadyList[MAX_PROCESS_PRIORITY];
 //全局阻塞列表

@@ -41,10 +41,8 @@ typedef struct ProcessList {
 
 //定义最多进程数
 #define MAX_PORCESS_NUMBER 20
-
 //定义最低优先级
 #define MAX_subordinateListItemValue 35
-
 //获得当前链表进程数
 #define GET_LIST_NUMBER(List) ((List)->numberOfProcesses)
 //获得当前列表项优先级
@@ -58,39 +56,32 @@ typedef struct ProcessList {
 
 
 //获得链表下一个时间片的进程
-#define listGET_OWNER_OF_NEXT_ENTRY( pcb, pxList )										\
-{																							\
-ProcessList * const pxConstList = ( pxList );													\
-	/* Increment the index to the next item and return the item, ensuring */				\
-	/* we don't return the marker used at the end of the list.  */							\
+#define listGET_OWNER_OF_NEXT_ENTRY( pcb, pxList )													\
+{												    												\											
+	ProcessList * const pxConstList = ( pxList );													\
+	/* Increment the index to the next item and return the item, ensuring */				        \
+	/* we don't return the marker used at the end of the list.  */							        \
 	( pxConstList )->ListItemIndex = ( pxConstList )->ListItemIndex->next;							\
 	if( ( void * ) ( pxConstList )->ListItemIndex == ( void * ) &( ( pxConstList )->lastItem ) )	\
-	{																						\
+	{																						        \
 		( pxConstList )->ListItemIndex = ( pxConstList )->ListItemIndex->next;						\
-	}																						\
+	}																						        \
 	( pcb ) = ( pxConstList )->ListItemIndex->PCB_block;											\
 }
 
 //获得链表 第一个进程
 #define listGET_OWNER_OF_HEAD_ENTRY(list) (list->lastItem->next->PCB_block)
-
 //检查列表是否被初始化
 #define listIS_INITIAL(list) (list->lastItem->priorityValue==MAX_subordinateListItemValue)
-
 //设置列表项值
 #define listSetListItemValue(listItem,value) ((listItem)->runTime=value)
 
 
 void InitProcessList(ProcessList* list);
-
 void InitListItem(ListItem* item);
-
 void InsertItemIntoProcessList(ListItem* item, ProcessList* list);
-
 void InsertItemToListEnd(ListItem*item, ProcessList* list);
-
 int DeleteFromList(ListItem*item);
-
 void SET_LIST_STATE(ProcessList* list, LIST_STATUS status);
 
 

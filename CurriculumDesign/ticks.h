@@ -25,8 +25,6 @@ HANDLE toKillProcessThread;
 HANDLE schedulerMutex;
 //初始化信号量
 void initSemphores();
-
-
 //进程模拟工作线程
 HANDLE processThread;
 //时钟工作线程
