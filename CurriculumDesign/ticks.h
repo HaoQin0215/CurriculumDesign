@@ -1,50 +1,49 @@
 #include<Windows.h>
 #include<signal.h>
 #include<stdint.h>
-//Ê±ÖÓ¼ÆÊýÆ÷
-long volatile tickCount;
-//»ù±¾ÀàÐÍ
-typedef long BaseType_t;
-//Ê±ÖÓ½ÚÅÄÀàÐÍ
-typedef uint32_t TickType_t;
-//¶ÑÕ»ÀàÐÍ
-typedef unsigned int StackType_t;
-//¿ªÆôÖÐ¶ÏÐÅºÅÁ¿
-HANDLE timeInterruptMutex;
-//¸ü¸Ä½ø³ÌÁÐ±í»òÕßÈ«¾ÖÊý¾Ý½á¹¹µÄÐÅºÅÁ¿
-HANDLE modifyListMutex;
-//Ê±ÖÓ¼ÆÊýÆ÷ÐÅºÅÁ¿
-HANDLE tickCountMutex;
-//ÖÐ¶ÏÐÅºÅÁ¿
-HANDLE INTERRUPTION;
-
-//É±ËÀÏß³ÌµÄÐÅºÅÁ¿
-HANDLE toKillProcessThread;
-
-//µ÷¶ÈÆ÷×èÈûÐÅºÅÁ¿
-HANDLE schedulerMutex;
-//³õÊ¼»¯ÐÅºÅÁ¿
-void initSemphores();
-//½ø³ÌÄ£Äâ¹¤×÷Ïß³Ì
-HANDLE processThread;
-//Ê±ÖÓ¹¤×÷Ïß³Ì
-HANDLE timerThread;
 
 #define tickTime 500
-
 #define ENTER_CRITICAL() enter_list_critical() 
-
 #define EXIT_CRITICAL() exit_list_critical()
 
-//¼ÆÊýÆ÷Ïß³ÌÖ´ÐÐº¯Êý
+//Ê±ï¿½Ó¼ï¿½ï¿½ï¿½ï¿½ï¿½
+long volatile tickCount;
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+typedef long BaseType_t;
+//Ê±ï¿½Ó½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+typedef uint32_t TickType_t;
+//ï¿½ï¿½Õ»ï¿½ï¿½ï¿½ï¿½
+typedef unsigned int StackType_t;
+//ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½Åºï¿½ï¿½ï¿½
+HANDLE timeInterruptMutex;
+//ï¿½ï¿½ï¿½Ä½ï¿½ï¿½ï¿½ï¿½Ð±ï¿½ï¿½ï¿½ï¿½ï¿½È«ï¿½ï¿½ï¿½ï¿½ï¿½Ý½á¹¹ï¿½ï¿½ï¿½Åºï¿½ï¿½ï¿½
+HANDLE modifyListMutex;
+//Ê±ï¿½Ó¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Åºï¿½ï¿½ï¿½
+HANDLE tickCountMutex;
+//ï¿½Ð¶ï¿½ï¿½Åºï¿½ï¿½ï¿½
+HANDLE INTERRUPTION;
+
+//É±ï¿½ï¿½ï¿½ß³Ìµï¿½ï¿½Åºï¿½ï¿½ï¿½
+HANDLE toKillProcessThread;
+
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Åºï¿½ï¿½ï¿½
+HANDLE schedulerMutex;
+//ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½Åºï¿½ï¿½ï¿½
+void initSemphores();
+//ï¿½ï¿½ï¿½ï¿½Ä£ï¿½â¹¤ï¿½ï¿½ï¿½ß³ï¿½
+HANDLE processThread;
+//Ê±ï¿½Ó¹ï¿½ï¿½ï¿½ï¿½ß³ï¿½
+HANDLE timerThread;
+
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß³ï¿½Ö´ï¿½Ðºï¿½ï¿½ï¿½
 DWORD WINAPI startTimer(LPVOID param);
-//¼ì²é¼ÆÊýÆ÷ÊÇ·ñÒç³ö
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½
 BOOL checkTickCountOverflow();
-//´´½¨¼ÆÊýÆ÷
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 void CreateTimer();
-//½øÈëÐÞ¸ÄÁÐ±íÊý¾Ý½á¹¹ÁÙ½çÇø
+//ï¿½ï¿½ï¿½ï¿½ï¿½Þ¸ï¿½ï¿½Ð±ï¿½ï¿½ï¿½ï¿½Ý½á¹¹ï¿½Ù½ï¿½ï¿½ï¿½
 void enter_list_critical();
-//ÍË³öÐÞ¸ÄÊý¾Ý½á¹¹ÁÙ½çÇø
+//ï¿½Ë³ï¿½ï¿½Þ¸ï¿½ï¿½ï¿½ï¿½Ý½á¹¹ï¿½Ù½ï¿½ï¿½ï¿½
 void exit_list_critical();
 
 

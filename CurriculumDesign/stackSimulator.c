@@ -5,7 +5,7 @@ int initOSstackSimulator(){
 	OSstackSimulatorItem* newItem = (OSstackSimulatorItem*)malloc(sizeof(OSstackSimulatorItem));
 	OSstackSimulatorItem* newItem2 = (OSstackSimulatorItem*)malloc(sizeof(OSstackSimulatorItem));
 	//OSstack* mystack = STATIC_OS_STACK;
-	if (newStack == NULL||newItem==NULL||newItem2==NULL ) return 0;
+	if (newStack == NULL || newItem==NULL || newItem2==NULL ) return 0;
 	else {
 		newStack->currentDeepth = 0;
 		newStack->totalLength = MAX_STACK_LENGTH;
@@ -54,13 +54,13 @@ int deletePcbFromStack(int idOfPcb){
 	OSstackSimulatorItem* iterator;
 	iterator = (*STATIC_OS_STACK)->startSimulatorItem;
 	if ((*STATIC_OS_STACK)->currentDeepth == 0) {
-		//printf("¶ÑÕ»Îª¿Õ\n");
+		//printf("ï¿½ï¿½Õ»Îªï¿½ï¿½\n");
 		result = 0;
 	}
 	else {
 		PCB_t*pcb=findPCB_ById(idOfPcb);
 		if (pcb == NULL) {
-			printf("Î´ÕÒµ½pcb\n");
+			printf("Î´ï¿½Òµï¿½pcb\n");
 			result = 0;
 		}
 		else {
@@ -70,7 +70,7 @@ int deletePcbFromStack(int idOfPcb){
 					//free(pcb);
 					//free(iterator->next);
 					(*STATIC_OS_STACK)->currentDeepth--;
-					printf("É¾³ıÁËÒ»¸östack");
+					printf("É¾ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½stack");
 					break;
 				}
 			}
@@ -104,10 +104,10 @@ void * findFunValueByPcbID(int id){
 	if ((*STATIC_OS_STACK)->currentDeepth != 0) {
 		iterator = (*STATIC_OS_STACK)->startSimulatorItem->next;
 		for (;;) {
-			//printf("µü´ú£º%d\t%d\n",iterator->pcb->IDofPCB,id);
+			//printf("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½%d\t%d\n",iterator->pcb->IDofPCB,id);
 			if (iterator->pcb->IDofPCB == id) {
 				result = iterator->functionValue;
-				//printf("ÏÂ±ê£º%d\t²éÑ¯½á¹û£º%d\n", iterator->index, result);
+				//printf("ï¿½Â±ê£º%d\tï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½ï¿½%d\n", iterator->index, result);
 				break;
 			}
 			//printf("%d", iterator->index);
